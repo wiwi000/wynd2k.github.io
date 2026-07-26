@@ -9,11 +9,12 @@
     <style>
         :root {
             --ios-bg: #000000;
-            --ios-card: rgba(28, 28, 30, 0.92);
-            --ios-border: rgba(255, 255, 255, 0.08);
+            --glass-bg: rgba(30, 32, 40, 0.36);
+            --glass-border: rgba(255, 255, 255, 0.16);
+            --glass-highlight: rgba(255, 255, 255, 0.25);
+            --ios-border: rgba(255, 255, 255, 0.1);
             --ios-blue: #007AFF;
-            --ios-gray: #8E8E93;
-            --glass: rgba(28, 28, 30, 0.85);
+            --ios-gray: #A6A6AD;
         }
 
         * {
@@ -42,7 +43,7 @@
             content: '';
             position: absolute;
             inset: 0;
-            background: rgba(0, 0, 0, 0.35);
+            background: rgba(0, 0, 0, 0.28);
         }
 
         .bg-canvas {
@@ -64,20 +65,48 @@
         }
 
         .ios-card {
-            background: var(--ios-card);
-            border-radius: 28px;
+            position: relative;
+            background: var(--glass-bg);
+            border-radius: 32px;
             padding: 28px 26px;
             margin-bottom: 18px;
-            border: 1px solid var(--ios-border);
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.45);
-            backdrop-filter: blur(40px);
-            -webkit-backdrop-filter: blur(40px);
+            border: 1px solid var(--glass-border);
+            box-shadow:
+                0 10px 40px rgba(0, 0, 0, 0.45),
+                inset 0 1px 0 var(--glass-highlight),
+                inset 0 0 24px rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(28px) saturate(180%);
+            -webkit-backdrop-filter: blur(28px) saturate(180%);
             transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+
+        /* Liquid-glass specular sheen across the top of each card */
+        .ios-card::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: inherit;
+            background: linear-gradient(165deg,
+                rgba(255, 255, 255, 0.14) 0%,
+                rgba(255, 255, 255, 0.04) 28%,
+                transparent 46%,
+                transparent 82%,
+                rgba(255, 255, 255, 0.05) 100%);
+            pointer-events: none;
+        }
+
+        .ios-card > * {
+            position: relative;
+            z-index: 1;
         }
 
         .ios-card:hover {
             transform: translateY(-6px);
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.55);
+            border-color: rgba(255, 255, 255, 0.24);
+            box-shadow:
+                0 20px 60px rgba(0, 0, 0, 0.55),
+                inset 0 1px 0 rgba(255, 255, 255, 0.35),
+                inset 0 0 30px rgba(255, 255, 255, 0.05);
         }
 
         .profile-header {
@@ -114,7 +143,7 @@
             width: 148px;
             height: 148px;
             border-radius: 50%;
-            border: 4px solid #1C1C1E;
+            border: 4px solid rgba(255, 255, 255, 0.18);
             object-fit: cover;
             position: relative;
             z-index: 2;
@@ -128,7 +157,7 @@
             width: 26px;
             height: 26px;
             background: #30D158;
-            border: 3px solid #1C1C1E;
+            border: 3px solid rgba(20, 22, 28, 0.85);
             border-radius: 50%;
             z-index: 3;
             box-shadow: 0 0 0 0 rgba(48, 209, 88, 0.6);
@@ -147,6 +176,17 @@
             letter-spacing: -0.6px;
             line-height: 1.1;
             margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 7px;
+        }
+
+        .verified-badge {
+            width: 1.05em;
+            height: 1.05em;
+            flex-shrink: 0;
+            filter: drop-shadow(0 0 8px rgba(29, 155, 240, 0.55));
         }
 
         .title {
@@ -168,16 +208,20 @@
         .social-item {
             width: 48px;
             height: 48px;
-            background: rgba(255, 255, 255, 0.08);
             border-radius: 16px;
             display: flex;
             align-items: center;
             justify-content: center;
-            color: #fff;
-            font-size: 1.15rem;
             transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
-            border: 1px solid var(--ios-border);
+            border: 1px solid rgba(255, 255, 255, 0.2);
             text-decoration: none;
+            overflow: hidden;
+        }
+
+        .social-item svg {
+            width: 22px;
+            height: 22px;
+            display: block;
         }
 
         .social-item:hover {
@@ -186,31 +230,40 @@
         }
 
         .social-item.facebook {
-            background: #0866FF;
-            border-color: transparent;
-            box-shadow: 0 6px 16px rgba(8, 102, 255, 0.35);
+            background: linear-gradient(180deg, rgba(255,255,255,0.25) 0%, rgba(255,255,255,0) 45%), #0866FF;
+            box-shadow: 0 6px 16px rgba(8, 102, 255, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.35);
         }
 
         .social-item.tiktok {
-            background: #010101;
-            border-color: rgba(255, 255, 255, 0.15);
-            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.5);
+            background: linear-gradient(180deg, rgba(255,255,255,0.14) 0%, rgba(255,255,255,0) 45%), #010101;
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.2);
         }
 
-        .social-item.tiktok i {
-            text-shadow: 2px 2px 0 #FE2C55, -2px -2px 0 #25F4EE;
+        .social-item.tiktok svg {
+            width: 24px;
+            height: 24px;
+            overflow: visible;
         }
 
         .social-item.instagram {
-            background: radial-gradient(circle at 30% 110%, #FFDB8B 0%, #EE653D 25%, #D42E81 50%, #A237B6 75%, #3E57BC 100%);
-            border-color: transparent;
-            box-shadow: 0 6px 16px rgba(212, 46, 129, 0.35);
+            background: linear-gradient(180deg, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0) 45%),
+                radial-gradient(circle at 30% 110%, #FFDB8B 0%, #EE653D 25%, #D42E81 50%, #A237B6 75%, #3E57BC 100%);
+            box-shadow: 0 6px 16px rgba(212, 46, 129, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.35);
+        }
+
+        .social-item.instagram svg {
+            width: 24px;
+            height: 24px;
         }
 
         .social-item.discord {
-            background: #5865F2;
-            border-color: transparent;
-            box-shadow: 0 6px 16px rgba(88, 101, 242, 0.4);
+            background: linear-gradient(180deg, rgba(255,255,255,0.25) 0%, rgba(255,255,255,0) 45%), #5865F2;
+            box-shadow: 0 6px 16px rgba(88, 101, 242, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.35);
+        }
+
+        .social-item.discord svg {
+            width: 26px;
+            height: 26px;
         }
 
         .section-header {
@@ -238,14 +291,17 @@
             display: flex;
             align-items: center;
             padding: 13px 16px;
-            background: rgba(255,255,255,0.03);
-            border-radius: 14px;
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.09);
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12);
+            border-radius: 16px;
             margin-bottom: 4px;
-            transition: background 0.2s ease;
+            transition: background 0.2s ease, border-color 0.2s ease;
         }
 
         .info-row:hover {
-            background: rgba(255,255,255,0.06);
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.16);
         }
 
         .info-row i {
@@ -303,7 +359,8 @@
             width: 100%;
             max-width: 320px;
             border-radius: 20px;
-            border: 1px solid var(--ios-border);
+            border: 1px solid rgba(255, 255, 255, 0.35);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.35);
             background: #fff;
             display: block;
             margin: 0 auto;
@@ -408,17 +465,33 @@
                 </div>
 
                 <div class="name-section">
-                    <h1>Ha Minh Khiem</h1>
+                    <h1>Ha Minh Khiem
+                        <svg class="verified-badge" viewBox="0 0 24 24" aria-label="Verified">
+                            <path fill="#1D9BF0" d="M22.25 12c0-1.43-.88-2.67-2.19-3.34.46-1.39.2-2.9-.81-3.91s-2.52-1.27-3.91-.81c-.66-1.31-1.91-2.19-3.34-2.19s-2.67.88-3.33 2.19c-1.4-.46-2.91-.2-3.92.81s-1.26 2.52-.8 3.91c-1.31.67-2.2 1.91-2.2 3.34s.89 2.67 2.2 3.34c-.46 1.39-.21 2.9.8 3.91s2.52 1.26 3.91.81c.67 1.31 1.91 2.19 3.34 2.19s2.68-.88 3.34-2.19c1.39.45 2.9.2 3.91-.81s1.27-2.52.81-3.91c1.31-.67 2.19-1.91 2.19-3.34zm-11.71 4.2L6.8 12.46l1.41-1.42 2.26 2.26 4.8-5.23 1.47 1.36-6.2 6.77z"/>
+                        </svg>
+                    </h1>
                     <div class="title">"A winner is just a loser who tried one more time."</div>
                 </div>
             </div>
 
             <!-- Social Links -->
             <div class="social-bar">
-                <a href="https://www.facebook.com/share/1EUqLeuK39/" target="_blank" rel="noopener" class="social-item facebook" title="Facebook"><i class="fab fa-facebook-f"></i></a>
-                <a href="https://www.tiktok.com/@mkhizm_shy" target="_blank" rel="noopener" class="social-item tiktok" title="TikTok"><i class="fab fa-tiktok"></i></a>
-                <a href="https://www.instagram.com/mkhizm_shy" target="_blank" rel="noopener" class="social-item instagram" title="Instagram"><i class="fab fa-instagram"></i></a>
-                <a href="https://discord.gg/gc4pSkUq" target="_blank" rel="noopener" class="social-item discord" title="Discord"><i class="fab fa-discord"></i></a>
+                <a href="https://www.facebook.com/share/1EUqLeuK39/" target="_blank" rel="noopener" class="social-item facebook" title="Facebook">
+                    <svg viewBox="0 0 320 512" aria-hidden="true"><path fill="#fff" d="M279.14 288l14.22-92.66h-88.91v-60.13c0-25.35 12.42-50.06 52.24-50.06h40.42V6.26S260.43 0 225.36 0c-73.22 0-121.08 44.38-121.08 124.72v70.62H22.89V288h81.39v224h100.17V288z"/></svg>
+                </a>
+                <a href="https://www.tiktok.com/@mkhizm_shy" target="_blank" rel="noopener" class="social-item tiktok" title="TikTok">
+                    <svg viewBox="0 0 448 512" aria-hidden="true">
+                        <path fill="#25F4EE" transform="translate(-9,-9)" d="M448,209.91a210.06,210.06,0,0,1-122.77-39.25V349.38A162.55,162.55,0,1,1,185,188.31V278.2a74.62,74.62,0,1,0,52.23,71.18V0l88,0a121.18,121.18,0,0,0,1.86,22.17h0A122.18,122.18,0,0,0,381,102.39a121.43,121.43,0,0,0,67,20.14Z"/>
+                        <path fill="#FE2C55" transform="translate(9,9)" d="M448,209.91a210.06,210.06,0,0,1-122.77-39.25V349.38A162.55,162.55,0,1,1,185,188.31V278.2a74.62,74.62,0,1,0,52.23,71.18V0l88,0a121.18,121.18,0,0,0,1.86,22.17h0A122.18,122.18,0,0,0,381,102.39a121.43,121.43,0,0,0,67,20.14Z"/>
+                        <path fill="#fff" d="M448,209.91a210.06,210.06,0,0,1-122.77-39.25V349.38A162.55,162.55,0,1,1,185,188.31V278.2a74.62,74.62,0,1,0,52.23,71.18V0l88,0a121.18,121.18,0,0,0,1.86,22.17h0A122.18,122.18,0,0,0,381,102.39a121.43,121.43,0,0,0,67,20.14Z"/>
+                    </svg>
+                </a>
+                <a href="https://www.instagram.com/mkhizm_shy" target="_blank" rel="noopener" class="social-item instagram" title="Instagram">
+                    <svg viewBox="0 0 448 512" aria-hidden="true"><path fill="#fff" d="M224.1 141c-63.6 0-114.9 51.3-114.9 114.9s51.3 114.9 114.9 114.9S339 319.5 339 255.9 287.7 141 224.1 141zm0 189.6c-41.1 0-74.7-33.5-74.7-74.7s33.5-74.7 74.7-74.7 74.7 33.5 74.7 74.7-33.6 74.7-74.7 74.7zm146.4-194.3c0 14.9-12 26.8-26.8 26.8-14.9 0-26.8-12-26.8-26.8s12-26.8 26.8-26.8 26.8 12 26.8 26.8zm76.1 27.2c-1.7-35.9-9.9-67.7-36.2-93.9-26.2-26.2-58-34.4-93.9-36.2-37-2.1-147.9-2.1-184.9 0-35.8 1.7-67.6 9.9-93.9 36.1s-34.4 58-36.2 93.9c-2.1 37-2.1 147.9 0 184.9 1.7 35.9 9.9 67.7 36.2 93.9s58 34.4 93.9 36.2c37 2.1 147.9 2.1 184.9 0 35.9-1.7 67.7-9.9 93.9-36.2 26.2-26.2 34.4-58 36.2-93.9 2.1-37 2.1-147.8 0-184.8zM398.8 388c-7.8 19.6-22.9 34.7-42.6 42.6-29.5 11.7-99.5 9-132.1 9s-102.7 2.6-132.1-9c-19.6-7.8-34.7-22.9-42.6-42.6-11.7-29.5-9-99.5-9-132.1s-2.6-102.7 9-132.1c7.8-19.6 22.9-34.7 42.6-42.6 29.5-11.7 99.5-9 132.1-9s102.7-2.6 132.1 9c19.6 7.8 34.7 22.9 42.6 42.6 11.7 29.5 9 99.5 9 132.1s2.7 102.7-9 132.1z"/></svg>
+                </a>
+                <a href="https://discord.gg/gc4pSkUq" target="_blank" rel="noopener" class="social-item discord" title="Discord">
+                    <svg viewBox="0 0 640 512" aria-hidden="true"><path fill="#fff" d="M524.531,69.836a1.5,1.5,0,0,0-.764-.7A485.065,485.065,0,0,0,404.081,32.03a1.816,1.816,0,0,0-1.923.91,337.461,337.461,0,0,0-14.9,30.6,447.848,447.848,0,0,0-134.426,0,309.541,309.541,0,0,0-15.135-30.6,1.89,1.89,0,0,0-1.924-.91A483.689,483.689,0,0,0,116.085,69.137a1.712,1.712,0,0,0-.788.676C39.068,183.651,18.186,294.69,28.43,404.354a2.016,2.016,0,0,0,.765,1.375A487.666,487.666,0,0,0,176.02,479.918a1.9,1.9,0,0,0,2.063-.676A348.2,348.2,0,0,0,208.12,430.4a1.86,1.86,0,0,0-1.019-2.588,321.173,321.173,0,0,1-45.868-21.853,1.885,1.885,0,0,1-.185-3.126c3.082-2.309,6.166-4.711,9.109-7.137a1.819,1.819,0,0,1,1.9-.256c96.229,43.917,200.41,43.917,295.5,0a1.812,1.812,0,0,1,1.924.233c2.944,2.426,6.027,4.851,9.132,7.16a1.884,1.884,0,0,1-.162,3.126,301.407,301.407,0,0,1-45.89,21.83,1.875,1.875,0,0,0-1,2.611,391.055,391.055,0,0,0,30.014,48.815,1.864,1.864,0,0,0,2.063.7A486.048,486.048,0,0,0,610.7,405.729a1.882,1.882,0,0,0,.765-1.352C623.729,277.594,590.933,167.465,524.531,69.836ZM222.491,337.58c-28.972,0-52.844-26.587-52.844-59.239S193.056,219.1,222.491,219.1c29.665,0,53.306,26.82,52.843,59.239C275.334,310.993,251.924,337.58,222.491,337.58Zm195.38,0c-28.971,0-52.843-26.587-52.843-59.239S388.437,219.1,417.871,219.1c29.667,0,53.307,26.82,52.844,59.239C470.715,310.993,447.538,337.58,417.871,337.58Z"/></svg>
+                </a>
             </div>
         </div>
 
