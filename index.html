@@ -66,6 +66,19 @@
             background: rgba(0, 0, 0, 0.28);
         }
 
+        @keyframes bg-slide {
+            to { transform: translate3d(0, -35lvh, 0); }
+        }
+
+        /* Compositor-driven parallax where supported: perfectly synced with the
+           scroll offset, no JS frame lag, immune to mobile URL-bar resizes */
+        @supports (animation-timeline: scroll()) {
+            .bg-image {
+                animation: bg-slide linear both;
+                animation-timeline: scroll(root);
+            }
+        }
+
         .bg-canvas {
             position: fixed;
             top: 0;
@@ -1279,30 +1292,57 @@
             const bg = document.querySelector('.bg-image');
             if (!bg) return;
 
-            let ticking = false;
+            // Modern browsers run the parallax as a CSS scroll-driven animation
+            // on the compositor — no JS needed there
+            if (window.CSS && CSS.supports && CSS.supports('animation-timeline: scroll()')) return;
 
-            function update() {
-                ticking = false;
-                const doc = document.documentElement;
-                const max = doc.scrollHeight - window.innerHeight;
-                const extra = bg.offsetHeight - window.innerHeight;
-                if (max <= 0 || extra <= 0) {
-                    bg.style.transform = 'translate3d(0, 0, 0)';
-                    return;
-                }
-                const p = Math.min(1, Math.max(0, window.scrollY / max));
-                bg.style.transform = 'translate3d(0, ' + (-extra * p) + 'px, 0)';
+            // Fallback: JS parallax with eased catch-up so momentum scrolling and
+            // URL-bar height changes never produce a visible jump
+            let vw = window.innerWidth;
+            let vh = window.innerHeight;
+            let target = 0;
+            let current = 0;
+            let rafId = null;
+
+            function computeTarget() {
+                const max = document.documentElement.scrollHeight - vh;
+                const extra = bg.offsetHeight - vh;
+                target = (max > 0 && extra > 0)
+                    ? Math.min(1, Math.max(0, window.scrollY / max)) * extra
+                    : 0;
             }
 
-            window.addEventListener('scroll', () => {
-                if (!ticking) {
-                    ticking = true;
-                    requestAnimationFrame(update);
+            function loop() {
+                current += (target - current) * 0.14;
+                if (Math.abs(target - current) < 0.4) {
+                    current = target;
+                    rafId = null;
+                } else {
+                    rafId = requestAnimationFrame(loop);
                 }
-            }, { passive: true });
+                bg.style.transform = 'translate3d(0, ' + (-current) + 'px, 0)';
+            }
 
-            window.addEventListener('resize', update);
-            update();
+            function kick() {
+                computeTarget();
+                if (!rafId) rafId = requestAnimationFrame(loop);
+            }
+
+            window.addEventListener('scroll', kick, { passive: true });
+
+            window.addEventListener('resize', () => {
+                // Ignore mobile URL-bar collapse/expand (small height-only changes);
+                // react only to orientation flips or real window resizes
+                const widthChanged = window.innerWidth !== vw;
+                const bigHeightChange = Math.abs(window.innerHeight - vh) > 150;
+                if (widthChanged || bigHeightChange) {
+                    vw = window.innerWidth;
+                    vh = window.innerHeight;
+                    kick();
+                }
+            });
+
+            kick();
         }
 
         // ==================== ACHIEVEMENT LIGHTBOX ====================
