@@ -31,6 +31,20 @@
             -moz-osx-font-smoothing: grayscale;
         }
 
+        .bg-image {
+            position: fixed;
+            inset: 0;
+            z-index: -2;
+            background: url('./assets/background.jpg') center / cover no-repeat #000;
+        }
+
+        .bg-image::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.35);
+        }
+
         .bg-canvas {
             position: fixed;
             top: 0;
@@ -38,7 +52,7 @@
             width: 100%;
             height: 100%;
             z-index: -1;
-            background: #000000;
+            background: transparent;
         }
 
         .main-wrapper {
@@ -128,11 +142,11 @@
         }
 
         .name-section h1 {
-            font-size: 2.1rem;
+            font-size: 1.5rem;
             font-weight: 700;
-            letter-spacing: -1.2px;
-            line-height: 1.05;
-            margin-bottom: 4px;
+            letter-spacing: -0.6px;
+            line-height: 1.1;
+            margin-bottom: 6px;
         }
 
         .title {
@@ -167,10 +181,36 @@
         }
 
         .social-item:hover {
-            background: rgba(0, 122, 255, 0.15);
-            color: #007AFF;
             transform: scale(1.1) translateY(-3px);
-            box-shadow: 0 8px 20px rgba(0, 122, 255, 0.25);
+            filter: brightness(1.15);
+        }
+
+        .social-item.facebook {
+            background: #0866FF;
+            border-color: transparent;
+            box-shadow: 0 6px 16px rgba(8, 102, 255, 0.35);
+        }
+
+        .social-item.tiktok {
+            background: #010101;
+            border-color: rgba(255, 255, 255, 0.15);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.5);
+        }
+
+        .social-item.tiktok i {
+            text-shadow: 2px 2px 0 #FE2C55, -2px -2px 0 #25F4EE;
+        }
+
+        .social-item.instagram {
+            background: radial-gradient(circle at 30% 110%, #FFDB8B 0%, #EE653D 25%, #D42E81 50%, #A237B6 75%, #3E57BC 100%);
+            border-color: transparent;
+            box-shadow: 0 6px 16px rgba(212, 46, 129, 0.35);
+        }
+
+        .social-item.discord {
+            background: #5865F2;
+            border-color: transparent;
+            box-shadow: 0 6px 16px rgba(88, 101, 242, 0.4);
         }
 
         .section-header {
@@ -216,9 +256,10 @@
         }
 
         .info-row span {
-            font-size: 0.92rem;
+            font-size: clamp(0.6rem, 3vw, 0.78rem);
             font-weight: 500;
             color: #fff;
+            white-space: nowrap;
         }
 
         .info-row .label {
@@ -351,6 +392,7 @@
     </style>
 </head>
 <body>
+    <div class="bg-image"></div>
     <canvas id="bg-canvas" class="bg-canvas"></canvas>
     
     <div class="main-wrapper">
@@ -366,18 +408,17 @@
                 </div>
 
                 <div class="name-section">
-                    <h1>HA MINH KHIEM</h1>
+                    <h1>Ha Minh Khiem</h1>
                     <div class="title">"A winner is just a loser who tried one more time."</div>
                 </div>
             </div>
 
             <!-- Social Links -->
             <div class="social-bar">
-                <a href="#" class="social-item" title="Facebook"><i class="fab fa-facebook-f"></i></a>
-                <a href="#" class="social-item" title="GitHub"><i class="fab fa-github"></i></a>
-                <a href="https://t.me/wynd2k" target="_blank" class="social-item" title="Telegram"><i class="fab fa-telegram-plane"></i></a>
-                <a href="#" class="social-item" title="TikTok"><i class="fab fa-tiktok"></i></a>
-                <a href="#" class="social-item" title="Portfolio"><i class="fas fa-globe"></i></a>
+                <a href="https://www.facebook.com/share/1EUqLeuK39/" target="_blank" rel="noopener" class="social-item facebook" title="Facebook"><i class="fab fa-facebook-f"></i></a>
+                <a href="https://www.tiktok.com/@mkhizm_shy" target="_blank" rel="noopener" class="social-item tiktok" title="TikTok"><i class="fab fa-tiktok"></i></a>
+                <a href="https://www.instagram.com/mkhizm_shy" target="_blank" rel="noopener" class="social-item instagram" title="Instagram"><i class="fab fa-instagram"></i></a>
+                <a href="https://discord.gg/gc4pSkUq" target="_blank" rel="noopener" class="social-item discord" title="Discord"><i class="fab fa-discord"></i></a>
             </div>
         </div>
 
@@ -437,7 +478,7 @@
         </div>
 
         <div class="footer fade-in delay-4">
-            © 2026 HA MINH KHIEM — All Rights Reserved<br>
+            © 2026 Ha Minh Khiem — All Rights Reserved<br>
             <span style="font-size: 0.65rem; opacity: 0.6;">Crafted with passion &amp; lots of coffee ☕</span>
         </div>
         
