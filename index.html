@@ -36,7 +36,20 @@
             -webkit-user-select: none;
             -moz-user-select: none;
             user-select: none;
-            touch-action: manipulation;
+            /* pan-y blocks pinch/double-tap zoom at the compositor level,
+               replacing the old non-passive JS touchmove blocker */
+            touch-action: pan-y;
+        }
+
+        /* Hide the page scrollbar (page stays scrollable) */
+        html {
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+
+        html::-webkit-scrollbar,
+        body::-webkit-scrollbar {
+            display: none;
         }
 
         img {
@@ -366,6 +379,7 @@
         }
 
         .payment-carousel {
+            touch-action: pan-x pan-y;
             overflow-x: auto;
             overscroll-behavior-x: contain;
             scroll-snap-type: x mandatory;
@@ -897,7 +911,18 @@
 
         @media (max-width: 480px) {
             .main-wrapper { padding: 12px; margin: 20px auto; }
-            .ios-card { padding: 22px 18px; border-radius: 22px; }
+
+            /* Lighter glass blur: backdrop-filter cost grows with radius and
+               phones re-filter every frame over the moving parallax background */
+            .ios-card {
+                padding: 22px 18px;
+                border-radius: 22px;
+                backdrop-filter: blur(16px) saturate(160%);
+                -webkit-backdrop-filter: blur(16px) saturate(160%);
+            }
+
+            /* The animated gold ring repaints every frame — keep it static on phones */
+            .achieve-card::before { animation: none; }
         }
     </style>
 </head>
@@ -1009,7 +1034,7 @@
             <div class="trophy-grid">
                 <button type="button" class="trophy-card" data-full="./assets/achievement-rrr.png" aria-label="Xem huy hiệu Fantastic RRR">
                     <span class="trophy-inner">
-                        <img src="./assets/achievement-rrr.png" alt="Huy hiệu Fantastic RRR - The5ers" draggable="false">
+                        <img src="./assets/achievement-rrr.png" alt="Huy hiệu Fantastic RRR - The5ers" loading="lazy" decoding="async" draggable="false">
                         <span class="trophy-tag">
                             <strong>Fantastic RRR</strong>
                             <span>The5ers • 01/2026</span>
@@ -1018,7 +1043,7 @@
                 </button>
                 <button type="button" class="trophy-card" data-full="./assets/achievement-funded.png" aria-label="Xem chứng nhận Funded Trader">
                     <span class="trophy-inner">
-                        <img src="./assets/achievement-funded.png" alt="Funded Certificate - The5ers" draggable="false">
+                        <img src="./assets/achievement-funded.png" alt="Funded Certificate - The5ers" loading="lazy" decoding="async" draggable="false">
                         <span class="trophy-tag">
                             <strong>Funded Certificate</strong>
                             <span>The5ers • 01/2026</span>
@@ -1042,11 +1067,11 @@
             <div class="payment-carousel" id="payment-carousel" tabindex="0" aria-label="Mã QR thanh toán">
                 <div class="payment-track" id="payment-track">
                     <div class="payment-slide">
-                        <img src="./assets/qr-mb.jpg?v=2" alt="VietQR - MB Bank" draggable="false">
+                        <img src="./assets/qr-mb.jpg?v=2" alt="VietQR - MB Bank" width="1080" height="1121" decoding="async" draggable="false">
                         <div class="payment-label"><i class="fas fa-university"></i> MB Bank • VietQR</div>
                     </div>
                     <div class="payment-slide">
-                        <img src="./assets/qr-momo.jpg?v=2" alt="MoMo - VietQR" draggable="false">
+                        <img src="./assets/qr-momo.jpg?v=2" alt="MoMo - VietQR" width="1080" height="1104" loading="lazy" decoding="async" draggable="false">
                         <div class="payment-label"><i class="fas fa-wallet"></i> MoMo • VietQR</div>
                     </div>
                 </div>
@@ -1064,7 +1089,7 @@
         <div class="ios-card music-card fade-in delay-4" id="music-card">
             <div class="music-player">
                 <div class="music-art">
-                    <img src="https://i.ytimg.com/vi/knW7-x7Y7RE/hqdefault.jpg" alt="Hãy Trao Cho Anh - Sơn Tùng M-TP" draggable="false">
+                    <img src="https://i.ytimg.com/vi/knW7-x7Y7RE/hqdefault.jpg" alt="Hãy Trao Cho Anh - Sơn Tùng M-TP" loading="lazy" decoding="async" draggable="false">
                     <div class="music-eq" aria-hidden="true"><i></i><i></i><i></i></div>
                 </div>
                 <div class="music-meta">
@@ -1111,6 +1136,7 @@
         const ctx = canvas.getContext('2d', { alpha: true });
         
         let particles = [];
+        let particleRaf = null;
         let mouse = { x: 0, y: 0 };
         
         function resizeCanvas() {
@@ -1165,7 +1191,11 @@
         
         function initParticles() {
             particles = [];
-            const count = Math.min(65, Math.floor((canvas.width * canvas.height) / 18000));
+            // Fewer particles on phones: the connection pass is O(n²)
+            const isPhone = canvas.width <= 600;
+            const density = isPhone ? 26000 : 18000;
+            const cap = isPhone ? 40 : 65;
+            const count = Math.min(cap, Math.floor((canvas.width * canvas.height) / density));
             for (let i = 0; i < count; i++) {
                 particles.push(new Particle());
             }
@@ -1197,17 +1227,29 @@
                 }
             }
             
-            requestAnimationFrame(animateParticles);
+            particleRaf = requestAnimationFrame(animateParticles);
         }
-        
+
         function setupBackground() {
             resizeCanvas();
             initParticles();
             animateParticles();
-            
+
             window.addEventListener('resize', () => {
                 resizeCanvas();
                 initParticles();
+            });
+
+            // Don't burn CPU while the tab is in the background
+            document.addEventListener('visibilitychange', () => {
+                if (document.hidden) {
+                    if (particleRaf) {
+                        cancelAnimationFrame(particleRaf);
+                        particleRaf = null;
+                    }
+                } else if (!particleRaf) {
+                    animateParticles();
+                }
             });
             
             document.addEventListener('mousemove', (e) => {
@@ -1474,10 +1516,13 @@
                             ready = true;
                             failed = false;
                             if (watchdog) { clearTimeout(watchdog); watchdog = null; }
+                            // Restore the default control UI — a late recovery after the
+                            // watchdog fired may have left the external-link icon behind
+                            btnIcon.className = 'fas fa-play';
+                            btn.setAttribute('aria-label', 'Phát / Tạm dừng');
                             tick();
                             if (pendingPlay) {
                                 pendingPlay = false;
-                                btnIcon.className = 'fas fa-play';
                                 player.playVideo();
                             }
                         },
@@ -1495,10 +1540,20 @@
                 });
             }
 
-            // Load the IFrame API up-front so the first tap starts playback inside the tap gesture
-            if (window.YT && window.YT.Player) {
-                createPlayer();
-            } else {
+            // The IFrame API is heavy (~1MB); load it only after the page has
+            // finished rendering so it never competes with first paint on mobile
+            let apiRequested = false;
+
+            function loadApi() {
+                if (apiRequested) return;
+                apiRequested = true;
+                // If the API never becomes ready (blocked network), fall back to opening
+                // YouTube. Generous deadline: slow 3G can take >8s; onReady cancels it.
+                watchdog = setTimeout(() => { if (!ready) markFailed(); }, 15000);
+                if (window.YT && window.YT.Player) {
+                    createPlayer();
+                    return;
+                }
                 const prev = window.onYouTubeIframeAPIReady;
                 window.onYouTubeIframeAPIReady = () => {
                     if (prev) prev();
@@ -1510,9 +1565,26 @@
                 document.head.appendChild(tag);
             }
 
-            // If the API never becomes ready (blocked network), fall back to opening YouTube.
-            // Generous deadline: slow 3G can legitimately take >8s; onReady cancels it.
-            watchdog = setTimeout(() => { if (!ready) markFailed(); }, 15000);
+            if (document.readyState === 'complete') {
+                setTimeout(loadApi, 1200);
+            } else {
+                window.addEventListener('load', () => setTimeout(loadApi, 1200));
+            }
+
+            // Warm the API well before the user can tap play, so the first tap
+            // starts playback inside its own gesture (iOS Safari requires this):
+            // as soon as the card approaches the viewport, or on first interaction
+            if ('IntersectionObserver' in window) {
+                const io = new IntersectionObserver((entries) => {
+                    if (entries.some(en => en.isIntersecting)) {
+                        io.disconnect();
+                        loadApi();
+                    }
+                }, { rootMargin: '600px' });
+                io.observe(card);
+            }
+            document.addEventListener('pointerdown', loadApi, { once: true, passive: true });
+            document.addEventListener('touchstart', loadApi, { once: true, passive: true });
 
             btn.addEventListener('click', () => {
                 if (failed) {
@@ -1523,6 +1595,7 @@
                     // Remember the intent and show feedback; onReady will start playback
                     pendingPlay = true;
                     btnIcon.className = 'fas fa-spinner fa-spin';
+                    loadApi();
                     return;
                 }
                 const st = player.getPlayerState();
@@ -1578,10 +1651,8 @@
             document.addEventListener('gesturestart', (e) => e.preventDefault());
             document.addEventListener('gesturechange', (e) => e.preventDefault());
 
-            // Multi-touch pinch on other mobile browsers
-            document.addEventListener('touchmove', (e) => {
-                if (e.touches.length > 1) e.preventDefault();
-            }, { passive: false });
+            // Pinch on other mobile browsers is blocked by `touch-action: pan-y`
+            // on <body> — no JS listener needed, so scrolling never waits on JS
         }
 
         // ==================== INITIALIZE EVERYTHING ====================
