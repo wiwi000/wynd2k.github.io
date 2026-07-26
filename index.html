@@ -44,11 +44,18 @@
             -webkit-touch-callout: none;
         }
 
+        /* Oversized + translated on scroll (parallax): the fixed height never changes when
+           mobile URL bars collapse, and transform runs on the compositor — no repaint jank */
         .bg-image {
             position: fixed;
-            inset: 0;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 135vh;
+            height: 135lvh;
             z-index: -2;
             background: url('./assets/background.jpg') center / cover no-repeat #000;
+            will-change: transform;
         }
 
         .bg-image::after {
@@ -1272,6 +1279,39 @@
             });
         }
 
+        // ==================== BACKGROUND PARALLAX ====================
+        // Slides the oversized background as the page scrolls so the full photo is
+        // revealed, using transform on the compositor thread (no scroll jank).
+        function initParallax() {
+            const bg = document.querySelector('.bg-image');
+            if (!bg) return;
+
+            let ticking = false;
+
+            function update() {
+                ticking = false;
+                const doc = document.documentElement;
+                const max = doc.scrollHeight - window.innerHeight;
+                const extra = bg.offsetHeight - window.innerHeight;
+                if (max <= 0 || extra <= 0) {
+                    bg.style.transform = 'translate3d(0, 0, 0)';
+                    return;
+                }
+                const p = Math.min(1, Math.max(0, window.scrollY / max));
+                bg.style.transform = 'translate3d(0, ' + (-extra * p) + 'px, 0)';
+            }
+
+            window.addEventListener('scroll', () => {
+                if (!ticking) {
+                    ticking = true;
+                    requestAnimationFrame(update);
+                }
+            }, { passive: true });
+
+            window.addEventListener('resize', update);
+            update();
+        }
+
         // ==================== ACHIEVEMENT LIGHTBOX ====================
         function initAchievements() {
             const lightbox = document.getElementById('lightbox');
@@ -1325,7 +1365,19 @@
             const card = document.getElementById('music-card');
             if (!card) return;
 
-            const VIDEO_ID = 'knW7-x7Y7RE';
+            // One of two tracks is picked at random on each visit (50/50)
+            const TRACKS = [
+                { id: 'knW7-x7Y7RE', title: 'Hãy Trao Cho Anh', artist: 'Sơn Tùng M-TP ft. Snoop Dogg' },
+                { id: 'Lm3UG2GXLHk', title: 'Tình Sầu Thiên Thu Muôn Lối', artist: 'Doãn Hiếu' }
+            ];
+            const track = TRACKS[Math.random() < 0.5 ? 0 : 1];
+            const VIDEO_ID = track.id;
+
+            const artImg = card.querySelector('.music-art img');
+            artImg.src = 'https://i.ytimg.com/vi/' + VIDEO_ID + '/hqdefault.jpg';
+            artImg.alt = track.title + ' - ' + track.artist;
+            card.querySelector('.music-title').textContent = track.title;
+            card.querySelector('.music-artist').textContent = track.artist;
             const btn = document.getElementById('music-btn');
             const btnIcon = btn.querySelector('i');
             const fill = document.getElementById('music-fill');
@@ -1504,6 +1556,7 @@
             initProtection();
             // Background
             setupBackground();
+            initParallax();
 
             // Payment carousel
             initPaymentCarousel();
