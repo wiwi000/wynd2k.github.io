@@ -638,13 +638,16 @@
             backdrop-filter: blur(14px);
             -webkit-backdrop-filter: blur(14px);
             opacity: 0;
+            visibility: hidden;
             pointer-events: none;
-            transition: opacity 0.3s ease;
+            transition: opacity 0.3s ease, visibility 0s linear 0.3s;
         }
 
         .lightbox.open {
             opacity: 1;
+            visibility: visible;
             pointer-events: auto;
+            transition: opacity 0.3s ease;
         }
 
         .lightbox img {
@@ -675,7 +678,8 @@
         }
 
         /* ==================== MUSIC CARD (compact mini player) ==================== */
-        .music-card {
+        /* .ios-card.music-card so the compact padding survives the 480px .ios-card override */
+        .ios-card.music-card {
             padding: 18px;
         }
 
@@ -1054,7 +1058,7 @@
                     <div class="music-label"><i class="fas fa-music"></i>MUSIC</div>
                     <div class="music-title">Hãy Trao Cho Anh</div>
                     <div class="music-artist">Sơn Tùng M-TP ft. Snoop Dogg</div>
-                    <div class="music-progress" id="music-progress" role="slider" aria-label="Tua bài hát" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+                    <div class="music-progress" id="music-progress" role="slider" tabindex="0" aria-label="Tua bài hát" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
                         <div class="music-track">
                             <div class="music-progress-fill" id="music-fill"></div>
                         </div>
@@ -1275,20 +1279,29 @@
             const imgEl = document.getElementById('lightbox-img');
             const closeBtn = document.getElementById('lightbox-close');
 
-            function open(src, alt) {
+            let lastTrigger = null;
+
+            function open(src, alt, trigger) {
                 imgEl.src = src;
                 imgEl.alt = alt;
+                lastTrigger = trigger || null;
                 lightbox.classList.add('open');
+                closeBtn.focus();
             }
 
             function close() {
+                if (!lightbox.classList.contains('open')) return;
                 lightbox.classList.remove('open');
+                if (lastTrigger) {
+                    lastTrigger.focus();
+                    lastTrigger = null;
+                }
             }
 
             document.querySelectorAll('.trophy-card').forEach(card => {
                 card.addEventListener('click', () => {
                     const img = card.querySelector('img');
-                    open(card.dataset.full || img.src, img.alt);
+                    open(card.dataset.full || img.src, img.alt, card);
                 });
             });
 
@@ -1297,7 +1310,13 @@
             });
 
             document.addEventListener('keydown', (e) => {
+                if (!lightbox.classList.contains('open')) return;
                 if (e.key === 'Escape') close();
+                // The close button is the dialog's only focusable element — keep focus on it
+                else if (e.key === 'Tab') {
+                    e.preventDefault();
+                    closeBtn.focus();
+                }
             });
         }
 
@@ -1317,7 +1336,9 @@
             let player = null;
             let ready = false;
             let failed = false;
+            let pendingPlay = false;
             let timer = null;
+            let watchdog = null;
 
             function fmt(s) {
                 s = Math.max(0, Math.floor(s || 0));
@@ -1337,6 +1358,7 @@
             }
 
             function setPlaying(on) {
+                if (failed) return;
                 card.classList.toggle('playing', on);
                 btnIcon.className = on ? 'fas fa-pause' : 'fas fa-play';
                 if (on) {
@@ -1348,12 +1370,32 @@
                 tick();
             }
 
+            // Playback can't work anymore — turn the button into an open-on-YouTube link
+            function markFailed() {
+                failed = true;
+                pendingPlay = false;
+                if (timer) { clearInterval(timer); timer = null; }
+                card.classList.remove('playing');
+                btnIcon.className = 'fas fa-arrow-up-right-from-square';
+                btn.setAttribute('aria-label', 'Mở trên YouTube');
+            }
+
             function createPlayer() {
                 player = new YT.Player('yt-audio', {
                     videoId: VIDEO_ID,
                     playerVars: { controls: 0, disablekb: 1, playsinline: 1, rel: 0, iv_load_policy: 3 },
                     events: {
-                        onReady: () => { ready = true; tick(); },
+                        onReady: () => {
+                            ready = true;
+                            failed = false;
+                            if (watchdog) { clearTimeout(watchdog); watchdog = null; }
+                            tick();
+                            if (pendingPlay) {
+                                pendingPlay = false;
+                                btnIcon.className = 'fas fa-play';
+                                player.playVideo();
+                            }
+                        },
                         onStateChange: (e) => {
                             if (e.data === YT.PlayerState.PLAYING) setPlaying(true);
                             else if (e.data === YT.PlayerState.PAUSED) setPlaying(false);
@@ -1363,7 +1405,7 @@
                                 curEl.textContent = '0:00';
                             }
                         },
-                        onError: () => { failed = true; }
+                        onError: markFailed
                     }
                 });
             }
@@ -1379,23 +1421,37 @@
                 };
                 const tag = document.createElement('script');
                 tag.src = 'https://www.youtube.com/iframe_api';
+                tag.onerror = markFailed;
                 document.head.appendChild(tag);
             }
 
-            // If the API never becomes ready (blocked network), fall back to opening YouTube
-            setTimeout(() => { if (!ready) failed = true; }, 8000);
+            // If the API never becomes ready (blocked network), fall back to opening YouTube.
+            // Generous deadline: slow 3G can legitimately take >8s; onReady cancels it.
+            watchdog = setTimeout(() => { if (!ready) markFailed(); }, 15000);
 
             btn.addEventListener('click', () => {
-                if (ready) {
-                    if (player.getPlayerState() === YT.PlayerState.PLAYING) player.pauseVideo();
-                    else player.playVideo();
-                } else if (failed) {
+                if (failed) {
                     window.open('https://www.youtube.com/watch?v=' + VIDEO_ID, '_blank', 'noopener');
+                    return;
+                }
+                if (!ready) {
+                    // Remember the intent and show feedback; onReady will start playback
+                    pendingPlay = true;
+                    btnIcon.className = 'fas fa-spinner fa-spin';
+                    return;
+                }
+                const st = player.getPlayerState();
+                if (st === YT.PlayerState.PLAYING || st === YT.PlayerState.BUFFERING) {
+                    btnIcon.className = 'fas fa-play';
+                    player.pauseVideo();
+                } else {
+                    btnIcon.className = 'fas fa-pause';
+                    player.playVideo();
                 }
             });
 
             progress.addEventListener('click', (e) => {
-                if (!ready) return;
+                if (!ready || failed) return;
                 const dur = player.getDuration() || 0;
                 if (!dur) return;
                 const rect = progress.getBoundingClientRect();
@@ -1403,6 +1459,21 @@
                 player.seekTo(dur * ratio, true);
                 fill.style.width = (ratio * 100) + '%';
                 curEl.textContent = fmt(dur * ratio);
+            });
+
+            progress.addEventListener('keydown', (e) => {
+                if (!ready || failed) return;
+                const dur = player.getDuration() || 0;
+                if (!dur) return;
+                let delta = 0;
+                if (e.key === 'ArrowRight' || e.key === 'ArrowUp') delta = 5;
+                else if (e.key === 'ArrowLeft' || e.key === 'ArrowDown') delta = -5;
+                else return;
+                e.preventDefault();
+                const target = Math.min(dur, Math.max(0, (player.getCurrentTime() || 0) + delta));
+                player.seekTo(target, true);
+                fill.style.width = (target / dur * 100) + '%';
+                curEl.textContent = fmt(target);
             });
         }
 
