@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WynDev • LÊ NHỰT QUI</title>
+    <title>HA MINH KHIEM</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=SF+Pro+Display:wght@700&amp;display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
@@ -14,7 +14,6 @@
             --ios-blue: #007AFF;
             --ios-gray: #8E8E93;
             --glass: rgba(28, 28, 30, 0.85);
-            --rainbow: linear-gradient(90deg, #a8edea, #fed6e3, #fac1ff, #d4fc79, #96e6a1, #a8edea);
         }
 
         * {
@@ -136,18 +135,12 @@
             margin-bottom: 4px;
         }
 
-        .nickname {
-            font-size: 1.05rem;
-            font-weight: 600;
-            color: var(--ios-blue);
-            margin-bottom: 6px;
-        }
-
         .title {
-            font-size: 0.95rem;
+            font-size: clamp(0.6rem, 3vw, 0.8rem);
             color: var(--ios-gray);
             font-weight: 500;
-            letter-spacing: 0.3px;
+            letter-spacing: 0.2px;
+            white-space: nowrap;
         }
 
         .social-bar {
@@ -235,95 +228,93 @@
             font-weight: 400;
         }
 
-        .skills-grid {
-            display: grid;
-            gap: 18px;
+        .payment-carousel {
+            overflow-x: auto;
+            overscroll-behavior-x: contain;
+            scroll-snap-type: x mandatory;
+            -webkit-overflow-scrolling: touch;
+            border-radius: 20px;
+            scrollbar-width: none;
+            cursor: grab;
         }
 
-        .skill-item {
-            margin-bottom: 4px;
+        .payment-carousel::-webkit-scrollbar {
+            display: none;
         }
 
-        .skill-header {
+        .payment-carousel.dragging {
+            cursor: grabbing;
+            scroll-snap-type: none;
+        }
+
+        .payment-track {
             display: flex;
-            justify-content: space-between;
-            margin-bottom: 8px;
+        }
+
+        .payment-slide {
+            flex: 0 0 100%;
+            scroll-snap-align: center;
+            scroll-snap-stop: always;
+            text-align: center;
+        }
+
+        .payment-slide img {
+            width: 100%;
+            max-width: 320px;
+            border-radius: 20px;
+            border: 1px solid var(--ios-border);
+            background: #fff;
+            display: block;
+            margin: 0 auto;
+            pointer-events: none;
+            -webkit-user-drag: none;
+            user-select: none;
+        }
+
+        .payment-label {
+            margin-top: 12px;
             font-size: 0.9rem;
             font-weight: 600;
-        }
-
-        .skill-header span:first-child {
             color: #fff;
         }
 
-        .skill-header span:last-child {
+        .payment-label i {
             color: #007AFF;
-            font-weight: 700;
+            margin-right: 6px;
         }
 
-        .progress-container {
+        .payment-dots {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 16px;
+        }
+
+        .pay-dot {
+            width: 8px;
             height: 8px;
-            background: rgba(255,255,255,0.08);
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.25);
+            transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+
+        .pay-dot.active {
+            background: #007AFF;
+            width: 22px;
             border-radius: 999px;
-            overflow: hidden;
-            position: relative;
+            box-shadow: 0 0 10px rgba(0, 122, 255, 0.6);
         }
 
-        .progress-bar {
-            height: 100%;
-            background: linear-gradient(90deg, #007AFF, #00C7FD);
-            border-radius: 999px;
-            transition: width 1.2s cubic-bezier(0.34, 1.56, 0.64, 1);
-            position: relative;
+        .payment-hint {
+            text-align: center;
+            margin-top: 12px;
+            font-size: 0.75rem;
+            color: var(--ios-gray);
         }
 
-        .progress-bar::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.35), transparent);
-            animation: progress-shimmer 2.5s infinite;
-        }
-
-        @keyframes progress-shimmer {
-            0% { transform: translateX(-100%); }
-            100% { transform: translateX(300%); }
-        }
-
-        .activity-card {
-            padding: 22px 20px;
-        }
-
-        #contribution-grid {
-            display: grid;
-            grid-template-columns: repeat(52, 1fr);
-            grid-template-rows: repeat(7, 1fr);
-            gap: 3.5px;
-            background: rgba(0,0,0,0.3);
-            padding: 16px;
-            border-radius: 18px;
-            border: 1px solid var(--ios-border);
-        }
-
-        .dot {
-            aspect-ratio: 1/1;
-            border-radius: 3px;
-            background: rgba(255, 255, 255, 0.06);
-            transition: background 0.2s ease;
-        }
-
-        .dot.active {
-            background: linear-gradient(45deg, #007AFF, #00C7FD, #007AFF);
-            box-shadow: 0 0 8px rgba(0, 122, 255, 0.6);
-            animation: dot-glow 1.8s ease-in-out infinite;
-        }
-
-        @keyframes dot-glow {
-            0%, 100% { box-shadow: 0 0 8px rgba(0, 122, 255, 0.6); }
-            50% { box-shadow: 0 0 16px rgba(0, 122, 255, 0.9); }
+        .payment-hint i {
+            color: #007AFF;
+            margin-right: 4px;
         }
 
         .footer {
@@ -333,19 +324,6 @@
             color: var(--ios-gray);
             font-weight: 500;
             letter-spacing: 0.5px;
-        }
-
-        .rainbow-text {
-            background: var(--rainbow);
-            background-size: 200% auto;
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            animation: rainbow-flow 3.5s linear infinite;
-            font-weight: 700;
-        }
-
-        @keyframes rainbow-flow {
-            to { background-position: 200% center; }
         }
 
         .fade-in {
@@ -369,7 +347,6 @@
         @media (max-width: 480px) {
             .main-wrapper { padding: 12px; margin: 20px auto; }
             .ios-card { padding: 22px 18px; border-radius: 22px; }
-            #contribution-grid { grid-template-columns: repeat(26, 1fr); }
         }
     </style>
 </head>
@@ -383,15 +360,14 @@
             <div class="profile-header">
                 <div class="avatar-container">
                     <div class="avatar-ring"></div>
-                    <img src="./assets/avatar.jpg" 
-                         alt="LÊ NHỰT QUI - WynDev" class="avatar-img">
+                    <img src="./assets/avatar.jpg"
+                         alt="HA MINH KHIEM" class="avatar-img">
                     <div class="status-dot"></div>
                 </div>
-                
+
                 <div class="name-section">
-                    <h1 class="rainbow-text">LÊ NHỰT QUI</h1>
-                    <div class="nickname">@WynDev</div>
-                    <div class="title">Full Stack Developer • Security Engineer</div>
+                    <h1>HA MINH KHIEM</h1>
+                    <div class="title">"A winner is just a loser who tried one more time."</div>
                 </div>
             </div>
 
@@ -414,97 +390,54 @@
             
             <div class="info-list">
                 <div class="info-row">
-                    <i class="fas fa-birthday-cake"></i>
-                    <span>11/04/200x</span>
-                </div>
-                <div class="info-row">
                     <i class="fas fa-briefcase"></i>
-                    <span>Full Stack Developer &amp; Security</span>
-                </div>
-                <div class="info-row">
-                    <i class="fas fa-heart"></i>
-                    <span>Lập trình • Âm nhạc • Code dạo</span>
+                    <span>Funded Trader for The5ers - Topstep - FTMO</span>
                 </div>
                 <div class="info-row">
                     <i class="fas fa-map-marker-alt"></i>
                     <span>TP.HCM, Việt Nam</span>
                 </div>
                 <div class="info-row">
+                    <i class="fas fa-phone"></i>
+                    <span>039 330 2487</span>
+                </div>
+                <div class="info-row">
                     <i class="fas fa-envelope"></i>
-                    <span>bufftow2@gmail.com</span>
-                </div>
-                <div class="info-row">
-                    <i class="fab fa-telegram-plane"></i>
-                    <span>@wynd2k</span>
-                </div>
-                <div class="info-row">
-                    <i class="fas fa-shield-alt"></i>
-                    <span>Đang phát triển Anti-DDoS</span>
+                    <span>Profile.haminhkhiem@gmail.com</span>
                 </div>
             </div>
         </div>
 
-        <!-- Skills Card -->
+        <!-- Payment Card -->
         <div class="ios-card fade-in delay-2">
             <div class="section-header">
-                <i class="fas fa-code"></i>
-                <span>SKILLS</span>
+                <i class="fas fa-qrcode"></i>
+                <span>PAYMENT</span>
             </div>
-            
-            <div class="skills-grid">
-                <div class="skill-item">
-                    <div class="skill-header">
-                        <span>HTML • CSS • JavaScript</span>
-                        <span>95%</span>
-                    </div>
-                    <div class="progress-container">
-                        <div class="progress-bar" style="width: 95%"></div>
-                    </div>
-                </div>
-                
-                <div class="skill-item">
-                    <div class="skill-header">
-                        <span>Python (Security &amp; Backend)</span>
-                        <span>90%</span>
-                    </div>
-                    <div class="progress-container">
-                        <div class="progress-bar" style="width: 90%"></div>
-                    </div>
-                </div>
-                
-                <div class="skill-item">
-                    <div class="skill-header">
-                        <span>Node.js • TypeScript</span>
-                        <span>85%</span>
-                    </div>
-                    <div class="progress-container">
-                        <div class="progress-bar" style="width: 85%"></div>
-                    </div>
-                </div>
-                
-                <div class="skill-item">
-                    <div class="skill-header">
-                        <span>Database (SQL • NoSQL)</span>
-                        <span>88%</span>
-                    </div>
-                    <div class="progress-container">
-                        <div class="progress-bar" style="width: 88%"></div>
-                    </div>
-                </div>
-            </div>
-        </div>
 
-        <!-- Activity Card -->
-        <div class="ios-card activity-card fade-in delay-3">
-            <div class="section-header">
-                <i class="fas fa-chart-line"></i>
-                <span>ACTIVITY • 2026</span>
+            <div class="payment-carousel" id="payment-carousel">
+                <div class="payment-track" id="payment-track">
+                    <div class="payment-slide">
+                        <img src="./assets/qr-mb.jpg" alt="VietQR - MB Bank" draggable="false">
+                        <div class="payment-label"><i class="fas fa-university"></i> MB Bank • VietQR</div>
+                    </div>
+                    <div class="payment-slide">
+                        <img src="./assets/qr-momo.jpg" alt="MoMo - VietQR" draggable="false">
+                        <div class="payment-label"><i class="fas fa-wallet"></i> MoMo • VietQR</div>
+                    </div>
+                </div>
             </div>
-            <div id="contribution-grid"></div>
+            <div class="payment-dots" id="payment-dots">
+                <span class="pay-dot active"></span>
+                <span class="pay-dot"></span>
+            </div>
+            <div class="payment-hint">
+                <i class="fas fa-hand-pointer"></i> Lướt / kéo để xem mã QR khác
+            </div>
         </div>
 
         <div class="footer fade-in delay-4">
-            © 2026 WynDev — All Rights Reserved<br>
+            © 2026 HA MINH KHIEM — All Rights Reserved<br>
             <span style="font-size: 0.65rem; opacity: 0.6;">Crafted with passion &amp; lots of coffee ☕</span>
         </div>
         
@@ -630,102 +563,61 @@
             }, { passive: true });
         }
 
-        // ==================== CONTRIBUTION GRID (Optimized & Smooth) ====================
-        function initContributionGrid() {
-            const grid = document.getElementById('contribution-grid');
-            const dots = [];
-            const rows = 7;
-            const cols = 52;
-            
-            grid.innerHTML = '';
-            
-            for (let i = 0; i < rows * cols; i++) {
-                const dot = document.createElement('div');
-                dot.className = 'dot';
-                grid.appendChild(dot);
-                dots.push(dot);
-            }
-            
-            let animationFrame;
-            let lastTime = 0;
-            const interval = 220; // Slower = smoother, less CPU
-            
-            function animateGrid(timestamp) {
-                if (!timestamp) timestamp = 0;
-                if (timestamp - lastTime > interval) {
-                    lastTime = timestamp;
-                    
-                    // Clear all
-                    dots.forEach(d => d.classList.remove('active'));
-                    
-                    // Create beautiful wave pattern (iOS style)
-                    for (let c = 0; c < cols; c++) {
-                        const height = Math.floor(Math.random() * (rows - 1)) + 1;
-                        const startRow = Math.floor(Math.random() * (rows - height));
-                        
-                        for (let r = 0; r < height; r++) {
-                            const idx = (startRow + r) * cols + c;
-                            if (dots[idx]) {
-                                dots[idx].classList.add('active');
-                            }
-                        }
-                    }
-                }
-                
-                animationFrame = requestAnimationFrame(animateGrid);
-            }
-            
-            // Start animation
-            setTimeout(() => {
-                animateGrid();
-            }, 800);
-            
-            // Pause when tab hidden (save battery)
-            document.addEventListener('visibilitychange', () => {
-                if (document.hidden) {
-                    cancelAnimationFrame(animationFrame);
-                } else {
-                    animateGrid();
-                }
-            });
-            
-            // Hover effect on dots
-            grid.addEventListener('mousemove', (e) => {
-                const rect = grid.getBoundingClientRect();
-                const x = Math.floor(((e.clientX - rect.left) / rect.width) * cols);
-                const y = Math.floor(((e.clientY - rect.top) / rect.height) * rows);
-                
-                dots.forEach((dot, index) => {
-                    const dotX = index % cols;
-                    const dotY = Math.floor(index / cols);
-                    const dist = Math.sqrt(Math.pow(dotX - x, 2) + Math.pow(dotY - y, 2));
-                    
-                    if (dist < 4) {
-                        dot.style.background = 'linear-gradient(45deg, #30D158, #007AFF)';
-                        dot.style.boxShadow = '0 0 12px rgba(48, 209, 88, 0.8)';
-                        setTimeout(() => {
-                            if (dot.classList.contains('active')) {
-                                dot.style.background = '';
-                                dot.style.boxShadow = '';
-                            }
-                        }, 600);
-                    }
-                });
-            });
-        }
+        // ==================== PAYMENT CAROUSEL (Swipe / Drag) ====================
+        function initPaymentCarousel() {
+            const carousel = document.getElementById('payment-carousel');
+            if (!carousel) return;
 
-        // ==================== PROGRESS BAR ANIMATION ====================
-        function animateProgressBars() {
-            const bars = document.querySelectorAll('.progress-bar');
-            
-            bars.forEach((bar, index) => {
-                const targetWidth = bar.style.width;
-                bar.style.width = '0%';
-                
-                setTimeout(() => {
-                    bar.style.transition = 'width 1.4s cubic-bezier(0.34, 1.56, 0.64, 1)';
-                    bar.style.width = targetWidth;
-                }, 280 + (index * 120));
+            const dots = document.querySelectorAll('.pay-dot');
+            const slideCount = document.querySelectorAll('.payment-slide').length;
+
+            // Update dot indicator while scrolling (touch swipe is native via scroll-snap)
+            function updateDots() {
+                const index = Math.round(carousel.scrollLeft / carousel.clientWidth);
+                dots.forEach((d, i) => d.classList.toggle('active', i === index));
+            }
+            carousel.addEventListener('scroll', () => {
+                requestAnimationFrame(updateDots);
+            }, { passive: true });
+
+            // Mouse drag support (desktop)
+            let isDown = false;
+            let startX = 0;
+            let startScroll = 0;
+
+            carousel.addEventListener('mousedown', (e) => {
+                isDown = true;
+                startX = e.clientX;
+                startScroll = carousel.scrollLeft;
+                carousel.classList.add('dragging');
+                e.preventDefault();
+            });
+
+            window.addEventListener('mousemove', (e) => {
+                if (!isDown) return;
+                carousel.scrollLeft = startScroll + (startX - e.clientX);
+            });
+
+            window.addEventListener('mouseup', (e) => {
+                if (!isDown) return;
+                isDown = false;
+                carousel.classList.remove('dragging');
+
+                // Snap to nearest / dragged-to slide
+                const dragged = startX - e.clientX;
+                let index = Math.round(startScroll / carousel.clientWidth);
+                if (dragged > 40) index++;
+                else if (dragged < -40) index--;
+                index = Math.max(0, Math.min(slideCount - 1, index));
+                carousel.scrollTo({ left: index * carousel.clientWidth, behavior: 'smooth' });
+            });
+
+            // Click on dots to jump
+            dots.forEach((dot, i) => {
+                dot.style.cursor = 'pointer';
+                dot.addEventListener('click', () => {
+                    carousel.scrollTo({ left: i * carousel.clientWidth, behavior: 'smooth' });
+                });
             });
         }
 
@@ -733,17 +625,15 @@
         function initAll() {
             // Background
             setupBackground();
-            
-            // Contribution grid
-            initContributionGrid();
-            
-            // Progress bars
-            setTimeout(animateProgressBars, 600);
-            
+
+            // Payment carousel
+            initPaymentCarousel();
+
             // Add subtle tilt to cards on mouse move (iOS-like depth)
             const cards = document.querySelectorAll('.ios-card');
             cards.forEach(card => {
                 card.addEventListener('mousemove', (e) => {
+                    if (e.target.closest('.payment-carousel')) return;
                     const rect = card.getBoundingClientRect();
                     const x = ((e.clientX - rect.left) / rect.width) - 0.5;
                     const y = ((e.clientY - rect.top) / rect.height) - 0.5;
@@ -791,7 +681,7 @@
                 }
             });
             
-            console.log('%c[WynDev] iOS Profile initialized successfully ✨', 'color:#007AFF; font-size:9px');
+            console.log('%c[HA MINH KHIEM] iOS Profile initialized successfully ✨', 'color:#007AFF; font-size:9px');
         }
         
         // Boot
@@ -802,7 +692,7 @@
         }
         
         // Expose for debugging
-        window.WynDev = { version: '2.1.0-iOS', author: 'LÊ NHỰT QUI' };
+        window.Profile = { version: '3.0.0-iOS', author: 'HA MINH KHIEM' };
     </script>
 </body>
 </html>
