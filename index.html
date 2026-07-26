@@ -2,7 +2,7 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>HA MINH KHIEM</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=SF+Pro+Display:wght@700&amp;display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -30,6 +30,18 @@
             overflow-x: hidden;
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
+            /* Block long-press callout, text selection and double-tap zoom */
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            user-select: none;
+            touch-action: manipulation;
+        }
+
+        img {
+            -webkit-user-drag: none;
+            user-drag: none;
+            -webkit-touch-callout: none;
         }
 
         .bg-image {
@@ -460,7 +472,7 @@
                 <div class="avatar-container">
                     <div class="avatar-ring"></div>
                     <img src="./assets/avatar.jpg"
-                         alt="HA MINH KHIEM" class="avatar-img">
+                         alt="Ha Minh Khiem" class="avatar-img" draggable="false">
                     <div class="status-dot"></div>
                 </div>
 
@@ -735,8 +747,31 @@
             });
         }
 
+        // ==================== CONTENT PROTECTION ====================
+        function initProtection() {
+            // Right-click / long-press context menu (save image, copy...)
+            document.addEventListener('contextmenu', (e) => e.preventDefault());
+
+            // Copy / cut text
+            document.addEventListener('copy', (e) => e.preventDefault());
+            document.addEventListener('cut', (e) => e.preventDefault());
+
+            // Drag images out of the page
+            document.addEventListener('dragstart', (e) => e.preventDefault());
+
+            // Pinch zoom on iOS Safari (ignores user-scalable=no)
+            document.addEventListener('gesturestart', (e) => e.preventDefault());
+            document.addEventListener('gesturechange', (e) => e.preventDefault());
+
+            // Multi-touch pinch on other mobile browsers
+            document.addEventListener('touchmove', (e) => {
+                if (e.touches.length > 1) e.preventDefault();
+            }, { passive: false });
+        }
+
         // ==================== INITIALIZE EVERYTHING ====================
         function initAll() {
+            initProtection();
             // Background
             setupBackground();
 
