@@ -391,7 +391,10 @@
         }
 
         /* Inner layer: background + real punched holes at the perforation line.
-           --hole-y is set from JS to the perforation's actual position. */
+           --hole-y is set from JS to the perforation's actual position.
+           Two non-overlapping half-width mask layers (one hole each) — needs no
+           mask-composite, which some mobile browsers implement incorrectly and
+           would leave the holes only partially transparent. */
         .t-inner {
             --hole-y: -60px;
             border-radius: 24px;
@@ -399,13 +402,11 @@
             background: linear-gradient(180deg, #FFFFFF 0%, #EFF2F7 100%);
             overflow: hidden;
             -webkit-mask:
-                radial-gradient(circle at 0 var(--hole-y), transparent 12px, #000 13px),
-                radial-gradient(circle at 100% var(--hole-y), transparent 12px, #000 13px);
-            -webkit-mask-composite: source-in;
+                radial-gradient(circle at 0 var(--hole-y), transparent 12px, #000 12.5px) left center / 51% 100% no-repeat,
+                radial-gradient(circle at 100% var(--hole-y), transparent 12px, #000 12.5px) right center / 51% 100% no-repeat;
             mask:
-                radial-gradient(circle at 0 var(--hole-y), transparent 12px, #000 13px),
-                radial-gradient(circle at 100% var(--hole-y), transparent 12px, #000 13px);
-            mask-composite: intersect;
+                radial-gradient(circle at 0 var(--hole-y), transparent 12px, #000 12.5px) left center / 51% 100% no-repeat,
+                radial-gradient(circle at 100% var(--hole-y), transparent 12px, #000 12.5px) right center / 51% 100% no-repeat;
         }
 
         .t-head {
