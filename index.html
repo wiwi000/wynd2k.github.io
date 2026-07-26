@@ -379,16 +379,61 @@
         }
 
         /* ==================== PAYMENT (neon scanner style) ==================== */
+        /* Theme colors are registered custom properties so the whole card can
+           cross-fade between the MB (cyan/blue) and MoMo (soft pink) themes */
+        @property --pn-a { syntax: '<color>'; inherits: true; initial-value: #00C7FD; }
+        @property --pn-b { syntax: '<color>'; inherits: true; initial-value: #7AB8FF; }
+        @property --pn-c { syntax: '<color>'; inherits: true; initial-value: #007AFF; }
+        @property --pn-d { syntax: '<color>'; inherits: true; initial-value: #7A52FF; }
+        @property --pn-tab-a { syntax: '<color>'; inherits: true; initial-value: #2E9BFF; }
+        @property --pn-tab-b { syntax: '<color>'; inherits: true; initial-value: #0068D6; }
+        @property --pn-tab-glow { syntax: '<color>'; inherits: true; initial-value: rgba(0, 122, 255, 0.45); }
+        @property --pn-tint-a { syntax: '<color>'; inherits: true; initial-value: rgba(0, 199, 253, 0.12); }
+        @property --pn-tint-b { syntax: '<color>'; inherits: true; initial-value: rgba(122, 82, 255, 0.14); }
+        @property --pn-glow { syntax: '<color>'; inherits: true; initial-value: rgba(0, 199, 253, 0.12); }
+        @property --pn-bracket-glow { syntax: '<color>'; inherits: true; initial-value: rgba(0, 199, 253, 0.8); }
+
         .pay-neon {
+            --pn-a: #00C7FD;
+            --pn-b: #7AB8FF;
+            --pn-c: #007AFF;
+            --pn-d: #7A52FF;
+            --pn-tab-a: #2E9BFF;
+            --pn-tab-b: #0068D6;
+            --pn-tab-glow: rgba(0, 122, 255, 0.45);
+            --pn-tint-a: rgba(0, 199, 253, 0.12);
+            --pn-tint-b: rgba(122, 82, 255, 0.14);
+            --pn-glow: rgba(0, 199, 253, 0.12);
+            --pn-bracket-glow: rgba(0, 199, 253, 0.8);
             position: relative;
             border-radius: 26px;
             margin-bottom: 18px;
             padding: 22px 20px 18px;
             background:
-                radial-gradient(130% 100% at 80% 0%, rgba(0, 199, 253, 0.12) 0%, transparent 55%),
-                radial-gradient(130% 100% at 10% 100%, rgba(122, 82, 255, 0.14) 0%, transparent 55%),
+                radial-gradient(130% 100% at 80% 0%, var(--pn-tint-a) 0%, transparent 55%),
+                radial-gradient(130% 100% at 10% 100%, var(--pn-tint-b) 0%, transparent 55%),
                 #0B0E17;
-            box-shadow: 0 16px 50px rgba(0, 0, 0, 0.65), 0 0 34px rgba(0, 199, 253, 0.12);
+            box-shadow: 0 16px 50px rgba(0, 0, 0, 0.65), 0 0 34px var(--pn-glow);
+            transition:
+                --pn-a 0.7s ease, --pn-b 0.7s ease, --pn-c 0.7s ease, --pn-d 0.7s ease,
+                --pn-tab-a 0.7s ease, --pn-tab-b 0.7s ease, --pn-tab-glow 0.7s ease,
+                --pn-tint-a 0.7s ease, --pn-tint-b 0.7s ease, --pn-glow 0.7s ease,
+                --pn-bracket-glow 0.7s ease;
+        }
+
+        /* Soft-pink MoMo theme, applied while the MoMo QR is in view */
+        .pay-neon.momo {
+            --pn-a: #FF8CC3;
+            --pn-b: #FFC2DF;
+            --pn-c: #F0568F;
+            --pn-d: #C9377E;
+            --pn-tab-a: #FF7DB8;
+            --pn-tab-b: #D6367F;
+            --pn-tab-glow: rgba(214, 54, 127, 0.45);
+            --pn-tint-a: rgba(255, 140, 195, 0.14);
+            --pn-tint-b: rgba(201, 55, 126, 0.16);
+            --pn-glow: rgba(255, 92, 168, 0.16);
+            --pn-bracket-glow: rgba(255, 140, 195, 0.8);
         }
 
         /* Neon gradient ring (masked to a thin border, same proven technique
@@ -399,7 +444,7 @@
             inset: 0;
             border-radius: 26px;
             padding: 1.5px;
-            background: linear-gradient(120deg, #00C7FD, #007AFF 40%, #7A52FF 80%, #00C7FD);
+            background: linear-gradient(120deg, var(--pn-a), var(--pn-c) 40%, var(--pn-d) 80%, var(--pn-a));
             -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
             -webkit-mask-composite: xor;
             mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
@@ -412,7 +457,7 @@
             font-size: 0.95rem;
             font-weight: 800;
             letter-spacing: 2.5px;
-            background: linear-gradient(90deg, #00C7FD, #7AB8FF);
+            background: linear-gradient(90deg, var(--pn-a), var(--pn-b));
             -webkit-background-clip: text;
             background-clip: text;
             color: transparent;
@@ -446,12 +491,12 @@
 
         .n-tab.on {
             color: #fff;
-            background: linear-gradient(180deg, #2E9BFF, #0068D6);
-            box-shadow: 0 4px 14px rgba(0, 122, 255, 0.45);
+            background: linear-gradient(180deg, var(--pn-tab-a), var(--pn-tab-b));
+            box-shadow: 0 4px 14px var(--pn-tab-glow);
         }
 
         .n-tab:focus-visible {
-            outline: 2px solid #00C7FD;
+            outline: 2px solid var(--pn-a);
             outline-offset: 2px;
         }
 
@@ -469,8 +514,8 @@
             position: absolute;
             width: 30px;
             height: 30px;
-            border: 3px solid #00C7FD;
-            filter: drop-shadow(0 0 6px rgba(0, 199, 253, 0.8));
+            border: 3px solid var(--pn-a);
+            filter: drop-shadow(0 0 6px var(--pn-bracket-glow));
             pointer-events: none;
             z-index: 1;
         }
@@ -869,61 +914,97 @@
             -webkit-backdrop-filter: blur(10px);
         }
 
-        /* ==================== MUSIC CARD (compact mini player) ==================== */
-        /* .ios-card.music-card so the compact padding survives the 480px .ios-card override */
-        .ios-card.music-card {
-            padding: 18px;
-        }
-
-        .music-player {
-            display: flex;
-            align-items: center;
-            gap: 14px;
-        }
-
-        .music-art {
+        /* ==================== MUSIC CARD (vinyl over full-bleed artwork) ==================== */
+        .music-card {
             position: relative;
-            width: 64px;
-            height: 64px;
-            border-radius: 14px;
+            border-radius: 24px;
+            margin-bottom: 18px;
             overflow: hidden;
-            flex-shrink: 0;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.45);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            box-shadow: 0 16px 46px rgba(0, 0, 0, 0.6);
         }
 
-        .music-art img {
+        /* Song artwork fills the card, faded under a color ramp for readability */
+        .music-bg {
+            position: absolute;
+            inset: 0;
+        }
+
+        .music-bg img {
             width: 100%;
             height: 100%;
             object-fit: cover;
             display: block;
         }
 
-        .music-eq {
+        .music-bg::after {
+            content: '';
             position: absolute;
-            right: 5px;
-            bottom: 5px;
-            display: none;
-            align-items: flex-end;
-            gap: 2px;
-            height: 12px;
+            inset: 0;
+            background:
+                linear-gradient(90deg, rgba(8, 9, 14, 0.92) 0%, rgba(8, 9, 14, 0.7) 45%, rgba(8, 9, 14, 0.32) 100%),
+                linear-gradient(180deg, transparent 40%, rgba(8, 9, 14, 0.55) 100%);
         }
 
-        .music-card.playing .music-eq { display: flex; }
-
-        .music-eq i {
-            width: 3px;
-            background: #30D158;
-            border-radius: 2px;
-            animation: eq-bounce 1s ease-in-out infinite;
+        .music-in {
+            position: relative;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 16px 18px;
         }
 
-        .music-eq i:nth-child(2) { animation-delay: 0.2s; }
-        .music-eq i:nth-child(3) { animation-delay: 0.4s; }
+        /* Full vinyl record — spins while the track plays */
+        .vinyl {
+            position: relative;
+            width: 84px;
+            height: 84px;
+            border-radius: 50%;
+            flex-shrink: 0;
+            background: repeating-radial-gradient(circle at 50% 50%, #131313 0 1.6px, #202020 1.6px 3.2px);
+            border: 1px solid rgba(255, 255, 255, 0.16);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.6), inset 0 0 14px rgba(0, 0, 0, 0.8);
+            animation: vinyl-spin 6s linear infinite;
+            animation-play-state: paused;
+        }
 
-        @keyframes eq-bounce {
-            0%, 100% { height: 4px; }
-            50% { height: 12px; }
+        .music-card.playing .vinyl { animation-play-state: running; }
+
+        @keyframes vinyl-spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .vinyl::after {
+            content: '';
+            position: absolute;
+            top: 6%;
+            left: 14%;
+            width: 46%;
+            height: 20%;
+            border-radius: 50%;
+            background: linear-gradient(120deg, rgba(255, 255, 255, 0.12), transparent 70%);
+            transform: rotate(-18deg);
+        }
+
+        .vinyl-label {
+            position: absolute;
+            inset: 26px;
+            border-radius: 50%;
+            background: radial-gradient(circle, #FFB454 0%, #E07B00 75%);
+            border: 2px solid rgba(0, 0, 0, 0.4);
+        }
+
+        .vinyl-hole {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 7px;
+            height: 7px;
+            margin: -3.5px 0 0 -3.5px;
+            border-radius: 50%;
+            background: #0B0B0E;
+            border: 1px solid rgba(255, 255, 255, 0.35);
+            z-index: 2;
         }
 
         .music-meta {
@@ -935,7 +1016,7 @@
             font-size: 0.55rem;
             font-weight: 600;
             letter-spacing: 1.4px;
-            color: var(--ios-blue);
+            color: #FFB454;
             margin-bottom: 3px;
         }
 
@@ -980,7 +1061,7 @@
             bottom: 0;
             width: 0%;
             border-radius: 99px;
-            background: linear-gradient(90deg, #007AFF, #00C7FD);
+            background: linear-gradient(90deg, #FF9500, #FFB454);
         }
 
         .music-progress-fill::after {
@@ -1011,28 +1092,28 @@
             border-radius: 50%;
             border: none;
             flex-shrink: 0;
-            background: linear-gradient(180deg, #2E9BFF, #0068D6);
-            color: #fff;
+            background: linear-gradient(180deg, #FFB454, #E07B00);
+            color: #1C1712;
             font-size: 1rem;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 8px 20px rgba(0, 122, 255, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.4);
+            box-shadow: 0 8px 20px rgba(255, 149, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.5);
             transition: transform 0.25s cubic-bezier(0.23, 1, 0.32, 1), box-shadow 0.25s ease;
         }
 
         .music-btn:active { transform: scale(0.92); }
 
         .music-btn:focus-visible {
-            outline: 2px solid #007AFF;
+            outline: 2px solid #FFB454;
             outline-offset: 3px;
         }
 
         .music-btn .fa-play { margin-left: 3px; }
 
         .music-card.playing .music-btn {
-            box-shadow: 0 8px 24px rgba(0, 122, 255, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.4);
+            box-shadow: 0 8px 24px rgba(255, 149, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.5);
         }
 
         /* Off-screen holder for the YouTube iframe that supplies the audio */
@@ -1266,12 +1347,15 @@
             </div>
         </section>
 
-        <!-- Music Card (compact mini player) -->
-        <div class="ios-card music-card fade-in delay-4" id="music-card">
-            <div class="music-player">
-                <div class="music-art">
-                    <img src="https://i.ytimg.com/vi/9tDzvJMXDRw/hqdefault.jpg" alt="Bad Boy - Marwa Loud" loading="lazy" decoding="async" draggable="false">
-                    <div class="music-eq" aria-hidden="true"><i></i><i></i><i></i></div>
+        <!-- Music Card (vinyl over full-bleed artwork) -->
+        <div class="music-card fade-in delay-4" id="music-card">
+            <div class="music-bg" aria-hidden="true">
+                <img src="https://i.ytimg.com/vi/9tDzvJMXDRw/hqdefault.jpg" alt="" loading="lazy" decoding="async" draggable="false">
+            </div>
+            <div class="music-in">
+                <div class="vinyl" aria-hidden="true">
+                    <span class="vinyl-label"></span>
+                    <span class="vinyl-hole"></span>
                 </div>
                 <div class="music-meta">
                     <div class="music-label"><i class="fas fa-music"></i>MUSIC</div>
@@ -1456,6 +1540,7 @@
             const slides = document.querySelectorAll('.payment-slide');
             const bankName = document.getElementById('pay-bank-name');
             const bankSub = document.getElementById('pay-bank-sub');
+            const payCard = document.querySelector('.pay-neon');
             const slideCount = slides.length;
 
             // Sync tabs + footer bank info while scrolling (touch swipe is native via scroll-snap)
@@ -1469,6 +1554,8 @@
                     if (bankName && slides[index].dataset.bank) bankName.textContent = slides[index].dataset.bank;
                     if (bankSub && slides[index].dataset.sub) bankSub.textContent = slides[index].dataset.sub;
                 }
+                // MoMo QR in view -> soft-pink theme (animated via CSS variable transitions)
+                if (payCard) payCard.classList.toggle('momo', index === 1);
             }
             carousel.addEventListener('scroll', () => {
                 requestAnimationFrame(updateDots);
@@ -1707,9 +1794,8 @@
             const track = TRACKS[Math.random() < 0.5 ? 0 : 1];
             const VIDEO_ID = track.id;
 
-            const artImg = card.querySelector('.music-art img');
+            const artImg = card.querySelector('.music-bg img');
             artImg.src = 'https://i.ytimg.com/vi/' + VIDEO_ID + '/hqdefault.jpg';
-            artImg.alt = track.title + ' - ' + track.artist;
             card.querySelector('.music-title').textContent = track.title;
             card.querySelector('.music-artist').textContent = track.artist;
             const btn = document.getElementById('music-btn');
