@@ -449,6 +449,408 @@
             margin-right: 4px;
         }
 
+        /* ==================== ACHIEVEMENT (gold trading-card style, distinct from glass cards) ==================== */
+        .achieve-card {
+            position: relative;
+            isolation: isolate;
+            border-radius: 28px;
+            padding: 26px 22px 22px;
+            margin-bottom: 18px;
+            background:
+                radial-gradient(120% 90% at 15% 0%, rgba(122, 82, 255, 0.18) 0%, transparent 55%),
+                radial-gradient(120% 90% at 85% 100%, rgba(243, 198, 75, 0.12) 0%, transparent 55%),
+                linear-gradient(160deg, #10131E 0%, #171126 55%, #0E1018 100%);
+            box-shadow: 0 12px 44px rgba(0, 0, 0, 0.55);
+        }
+
+        /* Animated gold frame (masked to a thin ring) */
+        .achieve-card::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 28px;
+            padding: 1.5px;
+            background: linear-gradient(120deg, #8E6A1E, #F3C64B 22%, #FFF3C4 38%, #B47F16 55%, #F3C64B 78%, #8E6A1E);
+            background-size: 220% 220%;
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            mask-composite: exclude;
+            pointer-events: none;
+            animation: gold-flow 7s linear infinite;
+        }
+
+        @keyframes gold-flow {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .achieve-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 18px;
+        }
+
+        .achieve-logo {
+            width: 42px;
+            height: 42px;
+            flex-shrink: 0;
+            filter: drop-shadow(0 0 10px rgba(243, 198, 75, 0.45));
+        }
+
+        .achieve-title {
+            font-size: 1rem;
+            font-weight: 700;
+            letter-spacing: 2px;
+            background: linear-gradient(120deg, #FFF3C4, #F3C64B 45%, #D9A425);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .achieve-sub {
+            font-size: 0.66rem;
+            color: var(--ios-gray);
+            letter-spacing: 0.4px;
+            margin-top: 2px;
+        }
+
+        .trophy-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+        }
+
+        .trophy-card {
+            position: relative;
+            display: block;
+            border: none;
+            font: inherit;
+            padding: 3px;
+            border-radius: 18px;
+            background: linear-gradient(160deg, #F7DE8C 0%, #C89020 30%, #FFF3C4 50%, #A9770F 72%, #E9C35B 100%);
+            box-shadow: 0 10px 26px rgba(0, 0, 0, 0.5), 0 0 18px rgba(243, 198, 75, 0.18);
+            cursor: pointer;
+            overflow: hidden;
+            transition: transform 0.45s cubic-bezier(0.23, 1, 0.32, 1), box-shadow 0.45s ease;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .trophy-card:nth-child(1) { transform: rotate(-2.5deg); }
+        .trophy-card:nth-child(2) { transform: rotate(2.5deg); }
+
+        .trophy-card:hover,
+        .trophy-card:focus-visible {
+            transform: rotate(0deg) translateY(-6px) scale(1.03);
+            box-shadow: 0 16px 36px rgba(0, 0, 0, 0.6), 0 0 26px rgba(243, 198, 75, 0.35);
+            z-index: 2;
+        }
+
+        .trophy-card:focus-visible {
+            outline: 2px solid #F3C64B;
+            outline-offset: 3px;
+        }
+
+        /* Holographic sheen sweeping across each card */
+        .trophy-card::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: inherit;
+            pointer-events: none;
+            background: linear-gradient(115deg, transparent 30%, rgba(255, 255, 255, 0.35) 48%, rgba(120, 220, 255, 0.22) 52%, transparent 68%);
+            transform: translateX(-140%);
+            animation: holo-sweep 5.2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+        }
+
+        .trophy-card:nth-child(2)::after { animation-delay: 2.6s; }
+
+        @keyframes holo-sweep {
+            0% { transform: translateX(-140%); }
+            38% { transform: translateX(140%); }
+            100% { transform: translateX(140%); }
+        }
+
+        .trophy-inner {
+            display: block;
+            border-radius: 15px;
+            overflow: hidden;
+            background: #0D0F16;
+        }
+
+        .trophy-inner img {
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            object-fit: cover;
+            display: block;
+        }
+
+        .trophy-tag {
+            display: block;
+            padding: 9px 8px 10px;
+            text-align: center;
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0)), #12141D;
+        }
+
+        .trophy-tag strong {
+            display: block;
+            font-size: 0.7rem;
+            font-weight: 600;
+            color: #FFE9A8;
+            letter-spacing: 0.3px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .trophy-tag span {
+            display: block;
+            font-size: 0.58rem;
+            color: var(--ios-gray);
+            margin-top: 2px;
+            letter-spacing: 0.5px;
+        }
+
+        .achieve-hint {
+            text-align: center;
+            margin-top: 14px;
+            font-size: 0.72rem;
+            color: var(--ios-gray);
+        }
+
+        .achieve-hint i {
+            color: #F3C64B;
+            margin-right: 4px;
+        }
+
+        /* ==================== LIGHTBOX (achievement zoom) ==================== */
+        .lightbox {
+            position: fixed;
+            inset: 0;
+            z-index: 50;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+            background: rgba(0, 0, 0, 0.86);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .lightbox.open {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .lightbox img {
+            max-width: min(92vw, 480px);
+            max-height: 82vh;
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.7);
+        }
+
+        .lightbox-close {
+            position: absolute;
+            top: 18px;
+            right: 18px;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            background: rgba(30, 32, 40, 0.6);
+            color: #fff;
+            font-size: 1rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+
+        /* ==================== MUSIC CARD (compact mini player) ==================== */
+        .music-card {
+            padding: 18px;
+        }
+
+        .music-player {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .music-art {
+            position: relative;
+            width: 64px;
+            height: 64px;
+            border-radius: 14px;
+            overflow: hidden;
+            flex-shrink: 0;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.45);
+        }
+
+        .music-art img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .music-eq {
+            position: absolute;
+            right: 5px;
+            bottom: 5px;
+            display: none;
+            align-items: flex-end;
+            gap: 2px;
+            height: 12px;
+        }
+
+        .music-card.playing .music-eq { display: flex; }
+
+        .music-eq i {
+            width: 3px;
+            background: #30D158;
+            border-radius: 2px;
+            animation: eq-bounce 1s ease-in-out infinite;
+        }
+
+        .music-eq i:nth-child(2) { animation-delay: 0.2s; }
+        .music-eq i:nth-child(3) { animation-delay: 0.4s; }
+
+        @keyframes eq-bounce {
+            0%, 100% { height: 4px; }
+            50% { height: 12px; }
+        }
+
+        .music-meta {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .music-label {
+            font-size: 0.55rem;
+            font-weight: 600;
+            letter-spacing: 1.4px;
+            color: var(--ios-blue);
+            margin-bottom: 3px;
+        }
+
+        .music-label i {
+            margin-right: 4px;
+            font-size: 0.55rem;
+        }
+
+        .music-title {
+            font-size: 0.85rem;
+            font-weight: 600;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .music-artist {
+            font-size: 0.66rem;
+            color: var(--ios-gray);
+            margin-top: 1px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .music-progress {
+            padding: 7px 0 5px;
+            cursor: pointer;
+        }
+
+        .music-track {
+            position: relative;
+            height: 5px;
+            border-radius: 99px;
+            background: rgba(255, 255, 255, 0.14);
+        }
+
+        .music-progress-fill {
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 0%;
+            border-radius: 99px;
+            background: linear-gradient(90deg, #007AFF, #00C7FD);
+        }
+
+        .music-progress-fill::after {
+            content: '';
+            position: absolute;
+            right: -5px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 11px;
+            height: 11px;
+            border-radius: 50%;
+            background: #fff;
+            box-shadow: 0 1px 5px rgba(0, 0, 0, 0.5);
+        }
+
+        .music-time {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.6rem;
+            color: var(--ios-gray);
+            margin-top: 3px;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .music-btn {
+            width: 46px;
+            height: 46px;
+            border-radius: 50%;
+            border: none;
+            flex-shrink: 0;
+            background: linear-gradient(180deg, #2E9BFF, #0068D6);
+            color: #fff;
+            font-size: 1rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 8px 20px rgba(0, 122, 255, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.4);
+            transition: transform 0.25s cubic-bezier(0.23, 1, 0.32, 1), box-shadow 0.25s ease;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .music-btn:active { transform: scale(0.92); }
+
+        .music-btn:focus-visible {
+            outline: 2px solid #007AFF;
+            outline-offset: 3px;
+        }
+
+        .music-btn .fa-play { margin-left: 3px; }
+
+        .music-card.playing .music-btn {
+            box-shadow: 0 8px 24px rgba(0, 122, 255, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.4);
+        }
+
+        /* Off-screen holder for the YouTube iframe that supplies the audio */
+        .yt-hidden {
+            position: fixed;
+            left: -9999px;
+            top: 0;
+            width: 1px;
+            height: 1px;
+            opacity: 0;
+            pointer-events: none;
+        }
+
         .footer {
             text-align: center;
             padding: 24px 0 10px;
@@ -467,6 +869,7 @@
         .fade-in.delay-2 { animation-delay: 0.2s; }
         .fade-in.delay-3 { animation-delay: 0.3s; }
         .fade-in.delay-4 { animation-delay: 0.4s; }
+        .fade-in.delay-5 { animation-delay: 0.5s; }
 
         @keyframes fadeUp {
             from {
@@ -557,8 +960,63 @@
             </div>
         </div>
 
+        <!-- Achievement Card (gold trading-card design) -->
+        <section class="achieve-card fade-in delay-2">
+            <div class="achieve-header">
+                <svg class="achieve-logo" viewBox="0 0 64 64" aria-hidden="true">
+                    <defs>
+                        <linearGradient id="gold-a" x1="0" y1="0" x2="1" y2="1">
+                            <stop offset="0" stop-color="#FFF3C4"/>
+                            <stop offset="0.5" stop-color="#F3C64B"/>
+                            <stop offset="1" stop-color="#B47F16"/>
+                        </linearGradient>
+                        <linearGradient id="gold-b" x1="0" y1="1" x2="1" y2="0">
+                            <stop offset="0" stop-color="#8E6A1E"/>
+                            <stop offset="0.5" stop-color="#E9C35B"/>
+                            <stop offset="1" stop-color="#FFF3C4"/>
+                        </linearGradient>
+                    </defs>
+                    <rect x="10" y="10" width="44" height="44" rx="10" transform="rotate(45 32 32)" fill="#151022" stroke="url(#gold-a)" stroke-width="2.5"/>
+                    <path d="M18 40c-3-5-3-11 0-16" stroke="url(#gold-b)" stroke-width="2" fill="none" stroke-linecap="round"/>
+                    <path d="M46 40c3-5 3-11 0-16" stroke="url(#gold-b)" stroke-width="2" fill="none" stroke-linecap="round"/>
+                    <path fill="url(#gold-a)" d="M24 22h16v3.2c0 5-3 9-6.4 9.9v3h3.4c.9 0 1.6.7 1.6 1.6v1.3H25.4v-1.3c0-.9.7-1.6 1.6-1.6h3.4v-3c-3.4-.9-6.4-4.9-6.4-9.9V22z"/>
+                    <path d="M24 24h-3.2c-.2 3.8 1.4 6.4 4.4 7.4M40 24h3.2c.2 3.8-1.4 6.4-4.4 7.4" stroke="url(#gold-a)" stroke-width="2" fill="none" stroke-linecap="round"/>
+                    <path fill="#FFF3C4" d="M32 12.8l1.2 2.4 2.6.4-1.9 1.9.5 2.6-2.4-1.3-2.4 1.3.5-2.6-1.9-1.9 2.6-.4z"/>
+                </svg>
+                <div>
+                    <div class="achieve-title">ACHIEVEMENTS</div>
+                    <div class="achieve-sub">Funded Trader • The5ers</div>
+                </div>
+            </div>
+
+            <div class="trophy-grid">
+                <button type="button" class="trophy-card" data-full="./assets/achievement-rrr.png" aria-label="Xem huy hiệu Fantastic RRR">
+                    <span class="trophy-inner">
+                        <img src="./assets/achievement-rrr.png" alt="Huy hiệu Fantastic RRR - The5ers" draggable="false">
+                        <span class="trophy-tag">
+                            <strong>Fantastic RRR</strong>
+                            <span>The5ers • 01/2026</span>
+                        </span>
+                    </span>
+                </button>
+                <button type="button" class="trophy-card" data-full="./assets/achievement-funded.png" aria-label="Xem chứng nhận Funded Trader">
+                    <span class="trophy-inner">
+                        <img src="./assets/achievement-funded.png" alt="Funded Certificate - The5ers" draggable="false">
+                        <span class="trophy-tag">
+                            <strong>Funded Certificate</strong>
+                            <span>The5ers • 01/2026</span>
+                        </span>
+                    </span>
+                </button>
+            </div>
+
+            <div class="achieve-hint">
+                <i class="fas fa-hand-pointer"></i> Chạm vào thẻ để xem chi tiết
+            </div>
+        </section>
+
         <!-- Payment Card -->
-        <div class="ios-card fade-in delay-2">
+        <div class="ios-card fade-in delay-3">
             <div class="section-header">
                 <i class="fas fa-qrcode"></i>
                 <span>PAYMENT</span>
@@ -567,11 +1025,11 @@
             <div class="payment-carousel" id="payment-carousel" tabindex="0" aria-label="Mã QR thanh toán">
                 <div class="payment-track" id="payment-track">
                     <div class="payment-slide">
-                        <img src="./assets/qr-mb.jpg" alt="VietQR - MB Bank" draggable="false">
+                        <img src="./assets/qr-mb.jpg?v=2" alt="VietQR - MB Bank" draggable="false">
                         <div class="payment-label"><i class="fas fa-university"></i> MB Bank • VietQR</div>
                     </div>
                     <div class="payment-slide">
-                        <img src="./assets/qr-momo.jpg" alt="MoMo - VietQR" draggable="false">
+                        <img src="./assets/qr-momo.jpg?v=2" alt="MoMo - VietQR" draggable="false">
                         <div class="payment-label"><i class="fas fa-wallet"></i> MoMo • VietQR</div>
                     </div>
                 </div>
@@ -585,12 +1043,50 @@
             </div>
         </div>
 
-        <div class="footer fade-in delay-4">
+        <!-- Music Card (compact mini player) -->
+        <div class="ios-card music-card fade-in delay-4" id="music-card">
+            <div class="music-player">
+                <div class="music-art">
+                    <img src="https://i.ytimg.com/vi/knW7-x7Y7RE/hqdefault.jpg" alt="Hãy Trao Cho Anh - Sơn Tùng M-TP" draggable="false">
+                    <div class="music-eq" aria-hidden="true"><i></i><i></i><i></i></div>
+                </div>
+                <div class="music-meta">
+                    <div class="music-label"><i class="fas fa-music"></i>MUSIC</div>
+                    <div class="music-title">Hãy Trao Cho Anh</div>
+                    <div class="music-artist">Sơn Tùng M-TP ft. Snoop Dogg</div>
+                    <div class="music-progress" id="music-progress" role="slider" aria-label="Tua bài hát" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+                        <div class="music-track">
+                            <div class="music-progress-fill" id="music-fill"></div>
+                        </div>
+                    </div>
+                    <div class="music-time">
+                        <span id="music-cur">0:00</span>
+                        <span id="music-dur">--:--</span>
+                    </div>
+                </div>
+                <button type="button" class="music-btn" id="music-btn" aria-label="Phát / Tạm dừng">
+                    <i class="fas fa-play"></i>
+                </button>
+            </div>
+        </div>
+
+        <div class="footer fade-in delay-5">
             © 2026 Ha Minh Khiem — All Rights Reserved<br>
             <span style="font-size: 0.7rem; opacity: 0.85;">Crafted with passion &amp; lots of coffee ☕</span>
         </div>
-        
+
     </div>
+
+    <!-- Lightbox for achievement zoom -->
+    <div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Xem ảnh thành tựu">
+        <button type="button" class="lightbox-close" id="lightbox-close" aria-label="Đóng">
+            <i class="fas fa-times"></i>
+        </button>
+        <img id="lightbox-img" src="" alt="Ảnh thành tựu" draggable="false">
+    </div>
+
+    <!-- Off-screen YouTube iframe holder (audio source for the music card) -->
+    <div class="yt-hidden" aria-hidden="true"><div id="yt-audio"></div></div>
 
     <script>
         // ==================== iOS STYLE BACKGROUND (Light Canvas Particles) ====================
@@ -772,6 +1268,144 @@
             });
         }
 
+        // ==================== ACHIEVEMENT LIGHTBOX ====================
+        function initAchievements() {
+            const lightbox = document.getElementById('lightbox');
+            if (!lightbox) return;
+            const imgEl = document.getElementById('lightbox-img');
+            const closeBtn = document.getElementById('lightbox-close');
+
+            function open(src, alt) {
+                imgEl.src = src;
+                imgEl.alt = alt;
+                lightbox.classList.add('open');
+            }
+
+            function close() {
+                lightbox.classList.remove('open');
+            }
+
+            document.querySelectorAll('.trophy-card').forEach(card => {
+                card.addEventListener('click', () => {
+                    const img = card.querySelector('img');
+                    open(card.dataset.full || img.src, img.alt);
+                });
+            });
+
+            lightbox.addEventListener('click', (e) => {
+                if (e.target !== imgEl) close();
+            });
+
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') close();
+            });
+        }
+
+        // ==================== MUSIC PLAYER (audio via hidden YouTube iframe) ====================
+        function initMusicPlayer() {
+            const card = document.getElementById('music-card');
+            if (!card) return;
+
+            const VIDEO_ID = 'knW7-x7Y7RE';
+            const btn = document.getElementById('music-btn');
+            const btnIcon = btn.querySelector('i');
+            const fill = document.getElementById('music-fill');
+            const progress = document.getElementById('music-progress');
+            const curEl = document.getElementById('music-cur');
+            const durEl = document.getElementById('music-dur');
+
+            let player = null;
+            let ready = false;
+            let failed = false;
+            let timer = null;
+
+            function fmt(s) {
+                s = Math.max(0, Math.floor(s || 0));
+                return Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0');
+            }
+
+            function tick() {
+                if (!ready || !player || typeof player.getCurrentTime !== 'function') return;
+                const dur = player.getDuration() || 0;
+                const cur = player.getCurrentTime() || 0;
+                if (dur > 0) {
+                    fill.style.width = (cur / dur * 100) + '%';
+                    durEl.textContent = fmt(dur);
+                    progress.setAttribute('aria-valuenow', String(Math.round(cur / dur * 100)));
+                }
+                curEl.textContent = fmt(cur);
+            }
+
+            function setPlaying(on) {
+                card.classList.toggle('playing', on);
+                btnIcon.className = on ? 'fas fa-pause' : 'fas fa-play';
+                if (on) {
+                    if (!timer) timer = setInterval(tick, 250);
+                } else if (timer) {
+                    clearInterval(timer);
+                    timer = null;
+                }
+                tick();
+            }
+
+            function createPlayer() {
+                player = new YT.Player('yt-audio', {
+                    videoId: VIDEO_ID,
+                    playerVars: { controls: 0, disablekb: 1, playsinline: 1, rel: 0, iv_load_policy: 3 },
+                    events: {
+                        onReady: () => { ready = true; tick(); },
+                        onStateChange: (e) => {
+                            if (e.data === YT.PlayerState.PLAYING) setPlaying(true);
+                            else if (e.data === YT.PlayerState.PAUSED) setPlaying(false);
+                            else if (e.data === YT.PlayerState.ENDED) {
+                                setPlaying(false);
+                                fill.style.width = '0%';
+                                curEl.textContent = '0:00';
+                            }
+                        },
+                        onError: () => { failed = true; }
+                    }
+                });
+            }
+
+            // Load the IFrame API up-front so the first tap starts playback inside the tap gesture
+            if (window.YT && window.YT.Player) {
+                createPlayer();
+            } else {
+                const prev = window.onYouTubeIframeAPIReady;
+                window.onYouTubeIframeAPIReady = () => {
+                    if (prev) prev();
+                    createPlayer();
+                };
+                const tag = document.createElement('script');
+                tag.src = 'https://www.youtube.com/iframe_api';
+                document.head.appendChild(tag);
+            }
+
+            // If the API never becomes ready (blocked network), fall back to opening YouTube
+            setTimeout(() => { if (!ready) failed = true; }, 8000);
+
+            btn.addEventListener('click', () => {
+                if (ready) {
+                    if (player.getPlayerState() === YT.PlayerState.PLAYING) player.pauseVideo();
+                    else player.playVideo();
+                } else if (failed) {
+                    window.open('https://www.youtube.com/watch?v=' + VIDEO_ID, '_blank', 'noopener');
+                }
+            });
+
+            progress.addEventListener('click', (e) => {
+                if (!ready) return;
+                const dur = player.getDuration() || 0;
+                if (!dur) return;
+                const rect = progress.getBoundingClientRect();
+                const ratio = Math.min(1, Math.max(0, (e.clientX - rect.left) / rect.width));
+                player.seekTo(dur * ratio, true);
+                fill.style.width = (ratio * 100) + '%';
+                curEl.textContent = fmt(dur * ratio);
+            });
+        }
+
         // ==================== CONTENT PROTECTION ====================
         function initProtection() {
             // Right-click / long-press context menu (save image, copy...)
@@ -802,6 +1436,12 @@
 
             // Payment carousel
             initPaymentCarousel();
+
+            // Achievement lightbox
+            initAchievements();
+
+            // Music mini player
+            initMusicPlayer();
 
             // Add subtle tilt to cards on mouse move (iOS-like depth)
             // Only on real pointer devices, so touch-synthesized events can't stick a tilt
