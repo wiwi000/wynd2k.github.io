@@ -409,9 +409,17 @@
             text-align: center;
         }
 
-        .payment-slide img {
+        .qr-wrap {
+            position: relative;
             width: 100%;
             max-width: 320px;
+            margin: 0 auto;
+            border-radius: 20px;
+            cursor: pointer;
+        }
+
+        .payment-slide img {
+            width: 100%;
             /* Keep the width/height attributes as an aspect-ratio hint only */
             height: auto;
             border-radius: 20px;
@@ -419,10 +427,57 @@
             box-shadow: 0 8px 30px rgba(0, 0, 0, 0.35);
             background: #fff;
             display: block;
-            margin: 0 auto;
             pointer-events: none;
             -webkit-user-drag: none;
             user-select: none;
+        }
+
+        /* Tap-to-save overlay on each QR */
+        .qr-overlay {
+            position: absolute;
+            inset: 0;
+            border-radius: 20px;
+            background: rgba(10, 12, 18, 0.55);
+            backdrop-filter: blur(3px);
+            -webkit-backdrop-filter: blur(3px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.25s ease;
+        }
+
+        .qr-wrap.active .qr-overlay {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .qr-save-btn {
+            border: none;
+            border-radius: 999px;
+            padding: 12px 22px;
+            font: inherit;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #fff;
+            background: linear-gradient(180deg, #2E9BFF, #0068D6);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.4);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transform: translateY(6px);
+            transition: transform 0.25s ease;
+        }
+
+        .qr-wrap.active .qr-save-btn { transform: translateY(0); }
+
+        .qr-save-btn:active { transform: scale(0.95); }
+
+        .qr-save-btn:focus-visible {
+            outline: 2px solid #fff;
+            outline-offset: 3px;
         }
 
         .payment-label {
@@ -1069,11 +1124,21 @@
             <div class="payment-carousel" id="payment-carousel" tabindex="0" aria-label="Mã QR thanh toán">
                 <div class="payment-track" id="payment-track">
                     <div class="payment-slide">
-                        <img src="./assets/qr-mb.jpg?v=2" alt="VietQR - MB Bank" width="1080" height="1121" decoding="async" draggable="false">
+                        <div class="qr-wrap" data-file="MB-Bank-VietQR.jpg" role="button" tabindex="0" aria-label="Hiện nút lưu mã QR MB Bank">
+                            <img src="./assets/qr-mb.jpg?v=2" alt="VietQR - MB Bank" width="1080" height="1121" decoding="async" draggable="false">
+                            <div class="qr-overlay">
+                                <button type="button" class="qr-save-btn"><i class="fas fa-download"></i> Lưu ảnh QR</button>
+                            </div>
+                        </div>
                         <div class="payment-label"><i class="fas fa-university"></i> MB Bank • VietQR</div>
                     </div>
                     <div class="payment-slide">
-                        <img src="./assets/qr-momo.jpg?v=2" alt="MoMo - VietQR" width="1080" height="1104" loading="lazy" decoding="async" draggable="false">
+                        <div class="qr-wrap" data-file="MoMo-VietQR.jpg" role="button" tabindex="0" aria-label="Hiện nút lưu mã QR MoMo">
+                            <img src="./assets/qr-momo.jpg?v=2" alt="MoMo - VietQR" width="1080" height="1104" loading="lazy" decoding="async" draggable="false">
+                            <div class="qr-overlay">
+                                <button type="button" class="qr-save-btn"><i class="fas fa-download"></i> Lưu ảnh QR</button>
+                            </div>
+                        </div>
                         <div class="payment-label"><i class="fas fa-wallet"></i> MoMo • VietQR</div>
                     </div>
                 </div>
@@ -1083,7 +1148,7 @@
                 <button type="button" class="pay-dot" aria-label="MoMo VietQR"></button>
             </div>
             <div class="payment-hint">
-                <i class="fas fa-hand-pointer"></i> Lướt / kéo để xem mã QR khác
+                <i class="fas fa-hand-pointer"></i> Lướt để xem mã khác • Chạm vào mã để lưu ảnh
             </div>
         </div>
 
@@ -1299,6 +1364,7 @@
                 startX = e.clientX;
                 startScroll = carousel.scrollLeft;
                 carousel.classList.add('dragging');
+                carousel.dataset.dragged = '0';
                 e.preventDefault();
             });
 
@@ -1314,6 +1380,7 @@
 
                 // Snap to nearest / dragged-to slide
                 const dragged = startX - e.clientX;
+                carousel.dataset.dragged = Math.abs(dragged) > 10 ? '1' : '0';
                 let index = Math.round(startScroll / carousel.clientWidth);
                 if (dragged > 40) index++;
                 else if (dragged < -40) index--;
@@ -1326,6 +1393,76 @@
                 dot.addEventListener('click', () => {
                     carousel.scrollTo({ left: i * carousel.clientWidth, behavior: 'smooth' });
                 });
+            });
+        }
+
+        // ==================== QR TAP-TO-SAVE ====================
+        function initQrSave() {
+            const wraps = document.querySelectorAll('.qr-wrap');
+            if (!wraps.length) return;
+            const carousel = document.getElementById('payment-carousel');
+
+            function deactivateAll(except) {
+                wraps.forEach(w => {
+                    if (w !== except) w.classList.remove('active');
+                });
+            }
+
+            function download(url, filename) {
+                function viaLink(href) {
+                    const a = document.createElement('a');
+                    a.href = href;
+                    a.download = filename;
+                    document.body.appendChild(a);
+                    a.click();
+                    a.remove();
+                }
+                // Blob download forces "save" even on browsers that would
+                // navigate to the image; plain link is the fallback
+                fetch(url)
+                    .then(res => res.blob())
+                    .then(blob => {
+                        const objectUrl = URL.createObjectURL(blob);
+                        viaLink(objectUrl);
+                        setTimeout(() => URL.revokeObjectURL(objectUrl), 4000);
+                    })
+                    .catch(() => viaLink(url));
+            }
+
+            wraps.forEach(wrap => {
+                wrap.addEventListener('click', () => {
+                    // A drag on the desktop carousel also ends in a click — ignore it
+                    if (carousel && carousel.dataset.dragged === '1') return;
+                    const on = wrap.classList.toggle('active');
+                    if (on) deactivateAll(wrap);
+                });
+
+                wrap.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        wrap.click();
+                    }
+                });
+
+                const saveBtn = wrap.querySelector('.qr-save-btn');
+                saveBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const img = wrap.querySelector('img');
+                    download(img.currentSrc || img.src, wrap.dataset.file || 'qr.jpg');
+                    const icon = saveBtn.querySelector('i');
+                    icon.className = 'fas fa-check';
+                    setTimeout(() => {
+                        icon.className = 'fas fa-download';
+                        wrap.classList.remove('active');
+                    }, 1400);
+                });
+            });
+
+            // Tapping anywhere else hides the save overlay
+            document.addEventListener('click', (e) => {
+                let inside = false;
+                wraps.forEach(w => { if (w.contains(e.target)) inside = true; });
+                if (!inside) deactivateAll(null);
             });
         }
 
@@ -1666,6 +1803,9 @@
 
             // Payment carousel
             initPaymentCarousel();
+
+            // QR tap-to-save overlay
+            initQrSave();
 
             // Achievement lightbox
             initAchievements();
