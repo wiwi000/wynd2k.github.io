@@ -419,6 +419,15 @@
             border-radius: 50%;
             background: rgba(255, 255, 255, 0.25);
             transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+            border: none;
+            padding: 0;
+            cursor: pointer;
+        }
+
+        .pay-dot:focus-visible,
+        .payment-carousel:focus-visible {
+            outline: 2px solid #007AFF;
+            outline-offset: 3px;
         }
 
         .pay-dot.active {
@@ -444,15 +453,14 @@
             text-align: center;
             padding: 24px 0 10px;
             font-size: 0.75rem;
-            color: var(--ios-gray);
+            color: #C7C7CC;
             font-weight: 500;
             letter-spacing: 0.5px;
+            text-shadow: 0 1px 8px rgba(0, 0, 0, 0.85);
         }
 
         .fade-in {
-            opacity: 0;
-            transform: translateY(25px);
-            animation: fadeUp 0.7s cubic-bezier(0.23, 1, 0.32, 1) forwards;
+            animation: fadeUp 0.7s cubic-bezier(0.23, 1, 0.32, 1) backwards;
         }
 
         .fade-in.delay-1 { animation-delay: 0.1s; }
@@ -461,9 +469,9 @@
         .fade-in.delay-4 { animation-delay: 0.4s; }
 
         @keyframes fadeUp {
-            to {
-                opacity: 1;
-                transform: translateY(0);
+            from {
+                opacity: 0;
+                transform: translateY(25px);
             }
         }
 
@@ -556,7 +564,7 @@
                 <span>PAYMENT</span>
             </div>
 
-            <div class="payment-carousel" id="payment-carousel">
+            <div class="payment-carousel" id="payment-carousel" tabindex="0" aria-label="Mã QR thanh toán">
                 <div class="payment-track" id="payment-track">
                     <div class="payment-slide">
                         <img src="./assets/qr-mb.jpg" alt="VietQR - MB Bank" draggable="false">
@@ -569,8 +577,8 @@
                 </div>
             </div>
             <div class="payment-dots" id="payment-dots">
-                <span class="pay-dot active"></span>
-                <span class="pay-dot"></span>
+                <button type="button" class="pay-dot active" aria-label="MB Bank VietQR" aria-current="true"></button>
+                <button type="button" class="pay-dot" aria-label="MoMo VietQR"></button>
             </div>
             <div class="payment-hint">
                 <i class="fas fa-hand-pointer"></i> Lướt / kéo để xem mã QR khác
@@ -579,12 +587,11 @@
 
         <div class="footer fade-in delay-4">
             © 2026 Ha Minh Khiem — All Rights Reserved<br>
-            <span style="font-size: 0.65rem; opacity: 0.6;">Crafted with passion &amp; lots of coffee ☕</span>
+            <span style="font-size: 0.7rem; opacity: 0.85;">Crafted with passion &amp; lots of coffee ☕</span>
         </div>
         
     </div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     <script>
         // ==================== iOS STYLE BACKGROUND (Light Canvas Particles) ====================
         const canvas = document.getElementById('bg-canvas');
@@ -715,7 +722,11 @@
             // Update dot indicator while scrolling (touch swipe is native via scroll-snap)
             function updateDots() {
                 const index = Math.round(carousel.scrollLeft / carousel.clientWidth);
-                dots.forEach((d, i) => d.classList.toggle('active', i === index));
+                dots.forEach((d, i) => {
+                    d.classList.toggle('active', i === index);
+                    if (i === index) d.setAttribute('aria-current', 'true');
+                    else d.removeAttribute('aria-current');
+                });
             }
             carousel.addEventListener('scroll', () => {
                 requestAnimationFrame(updateDots);
@@ -755,7 +766,6 @@
 
             // Click on dots to jump
             dots.forEach((dot, i) => {
-                dot.style.cursor = 'pointer';
                 dot.addEventListener('click', () => {
                     carousel.scrollTo({ left: i * carousel.clientWidth, behavior: 'smooth' });
                 });
@@ -794,10 +804,13 @@
             initPaymentCarousel();
 
             // Add subtle tilt to cards on mouse move (iOS-like depth)
-            const cards = document.querySelectorAll('.ios-card');
+            // Only on real pointer devices, so touch-synthesized events can't stick a tilt
+            const cards = window.matchMedia('(hover: hover) and (pointer: fine)').matches
+                ? document.querySelectorAll('.ios-card') : [];
             cards.forEach(card => {
                 card.addEventListener('mousemove', (e) => {
                     if (e.target.closest('.payment-carousel')) return;
+                    if (document.querySelector('.payment-carousel.dragging')) return;
                     const rect = card.getBoundingClientRect();
                     const x = ((e.clientX - rect.left) / rect.width) - 0.5;
                     const y = ((e.clientY - rect.top) / rect.height) - 0.5;
