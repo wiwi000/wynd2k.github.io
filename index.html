@@ -480,24 +480,31 @@
         .n-corner::before { bottom: 0; left: 0; border-right: none; border-top: none; border-radius: 0 0 0 12px; }
         .n-corner::after { bottom: 0; right: 0; border-left: none; border-top: none; border-radius: 0 0 12px 0; }
 
-        /* Scanning beam sweeping over the QR */
+        /* Scanning beam — hidden by default, plays one sweep when a swipe
+           settles on a different QR (triggered from JS via .scanning) */
         .n-scan {
             position: absolute;
             left: 16px;
             right: 16px;
-            top: 46%;
+            top: 7%;
             height: 3px;
             border-radius: 99px;
             background: linear-gradient(90deg, transparent, #00C7FD 30%, #7AB8FF 50%, #00C7FD 70%, transparent);
             box-shadow: 0 0 14px rgba(0, 199, 253, 0.9);
             pointer-events: none;
             z-index: 1;
-            animation: scan-sweep 2.8s ease-in-out infinite alternate;
+            opacity: 0;
+        }
+
+        .n-scan.scanning {
+            animation: scan-sweep 1.6s ease-in-out 1;
         }
 
         @keyframes scan-sweep {
-            from { top: 7%; }
-            to { top: 90%; }
+            0% { top: 7%; opacity: 0; }
+            12% { opacity: 1; }
+            88% { opacity: 1; }
+            100% { top: 90%; opacity: 0; }
         }
 
         @media (prefers-reduced-motion: reduce) {
@@ -1295,13 +1302,13 @@
         <div class="ios-card music-card fade-in delay-4" id="music-card">
             <div class="music-player">
                 <div class="music-art">
-                    <img src="https://i.ytimg.com/vi/knW7-x7Y7RE/hqdefault.jpg" alt="Hãy Trao Cho Anh - Sơn Tùng M-TP" loading="lazy" decoding="async" draggable="false">
+                    <img src="https://i.ytimg.com/vi/9tDzvJMXDRw/hqdefault.jpg" alt="Bad Boy - Marwa Loud" loading="lazy" decoding="async" draggable="false">
                     <div class="music-eq" aria-hidden="true"><i></i><i></i><i></i></div>
                 </div>
                 <div class="music-meta">
                     <div class="music-label"><i class="fas fa-music"></i>MUSIC</div>
-                    <div class="music-title">Hãy Trao Cho Anh</div>
-                    <div class="music-artist">Sơn Tùng M-TP ft. Snoop Dogg</div>
+                    <div class="music-title">Bad Boy</div>
+                    <div class="music-artist">Marwa Loud</div>
                     <div class="music-progress" id="music-progress" role="slider" tabindex="0" aria-label="Tua bài hát" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
                         <div class="music-track">
                             <div class="music-progress-fill" id="music-fill"></div>
@@ -1497,6 +1504,31 @@
             }
             carousel.addEventListener('scroll', () => {
                 requestAnimationFrame(updateDots);
+            }, { passive: true });
+
+            // Play the scan beam once when a swipe settles on a different QR —
+            // never while the user is still dragging back and forth
+            const scan = document.querySelector('.n-scan');
+            let settledIndex = 0;
+            let settleTimer = null;
+
+            if (scan) {
+                scan.addEventListener('animationend', () => scan.classList.remove('scanning'));
+            }
+
+            carousel.addEventListener('scroll', () => {
+                if (settleTimer) clearTimeout(settleTimer);
+                settleTimer = setTimeout(() => {
+                    const index = Math.round(carousel.scrollLeft / carousel.clientWidth);
+                    if (index !== settledIndex) {
+                        settledIndex = index;
+                        if (scan) {
+                            scan.classList.remove('scanning');
+                            void scan.offsetWidth;
+                            scan.classList.add('scanning');
+                        }
+                    }
+                }, 150);
             }, { passive: true });
 
             // Mouse drag support (desktop)
@@ -1726,8 +1758,8 @@
 
             // One of two tracks is picked at random on each visit (50/50)
             const TRACKS = [
-                { id: 'knW7-x7Y7RE', title: 'Hãy Trao Cho Anh', artist: 'Sơn Tùng M-TP ft. Snoop Dogg' },
-                { id: 'Lm3UG2GXLHk', title: 'Tình Sầu Thiên Thu Muôn Lối', artist: 'Doãn Hiếu' }
+                { id: '9tDzvJMXDRw', title: 'Bad Boy', artist: 'Marwa Loud' },
+                { id: 'TfkP5ubz1z4', title: 'Despacito', artist: 'Luis Fonsi & Daddy Yankee ft. Justin Bieber' }
             ];
             const track = TRACKS[Math.random() < 0.5 ? 0 : 1];
             const VIDEO_ID = track.id;
