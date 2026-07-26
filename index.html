@@ -14,7 +14,6 @@
             --ios-blue: #007AFF;
             --ios-gray: #8E8E93;
             --glass: rgba(28, 28, 30, 0.85);
-            --rainbow: linear-gradient(90deg, #a8edea, #fed6e3, #fac1ff, #d4fc79, #96e6a1, #a8edea);
         }
 
         * {
@@ -136,18 +135,12 @@
             margin-bottom: 4px;
         }
 
-        .nickname {
-            font-size: 1.05rem;
-            font-weight: 600;
-            color: var(--ios-blue);
-            margin-bottom: 6px;
-        }
-
         .title {
-            font-size: 0.95rem;
+            font-size: clamp(0.6rem, 3vw, 0.8rem);
             color: var(--ios-gray);
             font-weight: 500;
-            letter-spacing: 0.3px;
+            letter-spacing: 0.2px;
+            white-space: nowrap;
         }
 
         .social-bar {
@@ -333,19 +326,6 @@
             letter-spacing: 0.5px;
         }
 
-        .rainbow-text {
-            background: var(--rainbow);
-            background-size: 200% auto;
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            animation: rainbow-flow 3.5s linear infinite;
-            font-weight: 700;
-        }
-
-        @keyframes rainbow-flow {
-            to { background-position: 200% center; }
-        }
-
         .fade-in {
             opacity: 0;
             transform: translateY(25px);
@@ -386,7 +366,7 @@
                 </div>
 
                 <div class="name-section">
-                    <h1 class="rainbow-text">HA MINH KHIEM</h1>
+                    <h1>HA MINH KHIEM</h1>
                     <div class="title">"A winner is just a loser who tried one more time."</div>
                 </div>
             </div>
@@ -418,12 +398,12 @@
                     <span>TP.HCM, Việt Nam</span>
                 </div>
                 <div class="info-row">
-                    <i class="fas fa-envelope"></i>
-                    <span>Profile.haminhkhiem@gmail.com</span>
-                </div>
-                <div class="info-row">
                     <i class="fas fa-phone"></i>
                     <span>039 330 2487</span>
+                </div>
+                <div class="info-row">
+                    <i class="fas fa-envelope"></i>
+                    <span>Profile.haminhkhiem@gmail.com</span>
                 </div>
             </div>
         </div>
