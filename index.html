@@ -378,13 +378,113 @@
             font-size: 0.75rem;
         }
 
+        /* ==================== PAYMENT (boarding-pass ticket style) ==================== */
+        .pay-ticket {
+            position: relative;
+            border-radius: 24px;
+            margin-bottom: 18px;
+            padding-bottom: 16px;
+            background: linear-gradient(180deg, #FFFFFF 0%, #EFF2F7 100%);
+            color: #12141D;
+            box-shadow: 0 18px 50px rgba(0, 0, 0, 0.6);
+            overflow: hidden;
+        }
+
+        .t-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 20px 22px 14px;
+        }
+
+        .t-title {
+            font-size: 1rem;
+            font-weight: 800;
+            letter-spacing: 1px;
+            color: #12141D;
+        }
+
+        .t-sub {
+            font-size: 0.66rem;
+            color: #6B7280;
+            margin-top: 3px;
+        }
+
+        .t-chip {
+            font-size: 0.62rem;
+            font-weight: 700;
+            color: #0068D6;
+            background: rgba(0, 122, 255, 0.1);
+            border: 1px solid rgba(0, 122, 255, 0.25);
+            padding: 6px 12px;
+            border-radius: 999px;
+            white-space: nowrap;
+        }
+
+        /* Perforated divider with punched side notches */
+        .t-perfo {
+            position: relative;
+            height: 0;
+            border-top: 2px dashed #C9CFDA;
+            margin-top: 2px;
+        }
+
+        .t-perfo::before,
+        .t-perfo::after {
+            content: '';
+            position: absolute;
+            top: -14px;
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            background: #06070B;
+        }
+
+        .t-perfo::before { left: -14px; }
+        .t-perfo::after { right: -14px; }
+
+        .t-stub {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 22px 4px;
+        }
+
+        .t-bank span {
+            display: block;
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: #12141D;
+        }
+
+        .t-bank small {
+            display: block;
+            font-size: 0.6rem;
+            font-weight: 500;
+            color: #6B7280;
+            margin-top: 2px;
+            letter-spacing: 0.5px;
+        }
+
+        .t-barcode {
+            width: 92px;
+            height: 34px;
+            flex-shrink: 0;
+            background: repeating-linear-gradient(90deg,
+                #12141D 0 2px, transparent 2px 4px,
+                #12141D 4px 7px, transparent 7px 9px,
+                #12141D 9px 10px, transparent 10px 13px);
+            border-radius: 2px;
+        }
+
         .payment-carousel {
             touch-action: pan-x pan-y;
             overflow-x: auto;
             overscroll-behavior-x: contain;
             scroll-snap-type: x mandatory;
             -webkit-overflow-scrolling: touch;
-            border-radius: 20px;
+            border-radius: 14px;
+            margin: 2px 0 16px;
             scrollbar-width: none;
             cursor: grab;
         }
@@ -407,6 +507,7 @@
             scroll-snap-align: center;
             scroll-snap-stop: always;
             text-align: center;
+            padding: 0 26px;
         }
 
         .qr-wrap {
@@ -414,7 +515,7 @@
             width: 100%;
             max-width: 320px;
             margin: 0 auto;
-            border-radius: 20px;
+            border-radius: 14px;
             cursor: pointer;
         }
 
@@ -422,9 +523,8 @@
             width: 100%;
             /* Keep the width/height attributes as an aspect-ratio hint only */
             height: auto;
-            border-radius: 20px;
-            border: 1px solid rgba(255, 255, 255, 0.35);
-            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.35);
+            border-radius: 14px;
+            border: 1px solid #E3E7EE;
             background: #fff;
             display: block;
             pointer-events: none;
@@ -436,7 +536,7 @@
         .qr-overlay {
             position: absolute;
             inset: 0;
-            border-radius: 20px;
+            border-radius: 14px;
             background: rgba(10, 12, 18, 0.55);
             backdrop-filter: blur(3px);
             -webkit-backdrop-filter: blur(3px);
@@ -480,30 +580,18 @@
             outline-offset: 3px;
         }
 
-        .payment-label {
-            margin-top: 12px;
-            font-size: 0.9rem;
-            font-weight: 600;
-            color: #fff;
-        }
-
-        .payment-label i {
-            color: #007AFF;
-            margin-right: 6px;
-        }
-
         .payment-dots {
             display: flex;
             justify-content: center;
             gap: 8px;
-            margin-top: 16px;
+            margin-top: 14px;
         }
 
         .pay-dot {
             width: 8px;
             height: 8px;
             border-radius: 50%;
-            background: rgba(255, 255, 255, 0.25);
+            background: #C9CFDA;
             transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
             border: none;
             padding: 0;
@@ -520,14 +608,14 @@
             background: #007AFF;
             width: 22px;
             border-radius: 999px;
-            box-shadow: 0 0 10px rgba(0, 122, 255, 0.6);
+            box-shadow: 0 0 10px rgba(0, 122, 255, 0.35);
         }
 
         .payment-hint {
             text-align: center;
             margin-top: 12px;
-            font-size: 0.75rem;
-            color: var(--ios-gray);
+            font-size: 0.72rem;
+            color: #8A94A6;
         }
 
         .payment-hint i {
@@ -1114,35 +1202,46 @@
             </div>
         </section>
 
-        <!-- Payment Card -->
-        <div class="ios-card fade-in delay-3">
-            <div class="section-header">
-                <i class="fas fa-qrcode"></i>
-                <span>PAYMENT</span>
+        <!-- Payment Card (boarding-pass ticket style) -->
+        <section class="pay-ticket fade-in delay-3">
+            <div class="t-head">
+                <div>
+                    <div class="t-title">PAYMENT</div>
+                    <div class="t-sub">Quét mã để chuyển khoản</div>
+                </div>
+                <div class="t-chip">NAPAS 247</div>
             </div>
 
             <div class="payment-carousel" id="payment-carousel" tabindex="0" aria-label="Mã QR thanh toán">
                 <div class="payment-track" id="payment-track">
-                    <div class="payment-slide">
+                    <div class="payment-slide" data-bank="MB Bank • VietQR">
                         <div class="qr-wrap" data-file="MB-Bank-VietQR.jpg" role="button" tabindex="0" aria-label="Hiện nút lưu mã QR MB Bank">
                             <img src="./assets/qr-mb.jpg?v=2" alt="VietQR - MB Bank" width="1080" height="1121" decoding="async" draggable="false">
                             <div class="qr-overlay">
                                 <button type="button" class="qr-save-btn"><i class="fas fa-download"></i> Lưu ảnh QR</button>
                             </div>
                         </div>
-                        <div class="payment-label"><i class="fas fa-university"></i> MB Bank • VietQR</div>
                     </div>
-                    <div class="payment-slide">
+                    <div class="payment-slide" data-bank="MoMo • VietQR">
                         <div class="qr-wrap" data-file="MoMo-VietQR.jpg" role="button" tabindex="0" aria-label="Hiện nút lưu mã QR MoMo">
                             <img src="./assets/qr-momo.jpg?v=2" alt="MoMo - VietQR" width="1080" height="1104" loading="lazy" decoding="async" draggable="false">
                             <div class="qr-overlay">
                                 <button type="button" class="qr-save-btn"><i class="fas fa-download"></i> Lưu ảnh QR</button>
                             </div>
                         </div>
-                        <div class="payment-label"><i class="fas fa-wallet"></i> MoMo • VietQR</div>
                     </div>
                 </div>
             </div>
+
+            <div class="t-perfo" aria-hidden="true"></div>
+            <div class="t-stub">
+                <div class="t-bank">
+                    <span id="pay-bank-name">MB Bank • VietQR</span>
+                    <small>HA MINH KHIEM</small>
+                </div>
+                <div class="t-barcode" aria-hidden="true"></div>
+            </div>
+
             <div class="payment-dots" id="payment-dots">
                 <button type="button" class="pay-dot active" aria-label="MB Bank VietQR" aria-current="true"></button>
                 <button type="button" class="pay-dot" aria-label="MoMo VietQR"></button>
@@ -1150,7 +1249,7 @@
             <div class="payment-hint">
                 <i class="fas fa-hand-pointer"></i> Lướt để xem mã khác • Chạm vào mã để lưu ảnh
             </div>
-        </div>
+        </section>
 
         <!-- Music Card (compact mini player) -->
         <div class="ios-card music-card fade-in delay-4" id="music-card">
@@ -1339,7 +1438,9 @@
             if (!carousel) return;
 
             const dots = document.querySelectorAll('.pay-dot');
-            const slideCount = document.querySelectorAll('.payment-slide').length;
+            const slides = document.querySelectorAll('.payment-slide');
+            const bankName = document.getElementById('pay-bank-name');
+            const slideCount = slides.length;
 
             // Update dot indicator while scrolling (touch swipe is native via scroll-snap)
             function updateDots() {
@@ -1349,6 +1450,10 @@
                     if (i === index) d.setAttribute('aria-current', 'true');
                     else d.removeAttribute('aria-current');
                 });
+                // Ticket stub shows the bank of the QR in view
+                if (bankName && slides[index] && slides[index].dataset.bank) {
+                    bankName.textContent = slides[index].dataset.bank;
+                }
             }
             carousel.addEventListener('scroll', () => {
                 requestAnimationFrame(updateDots);
