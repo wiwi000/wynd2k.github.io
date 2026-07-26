@@ -330,11 +330,24 @@
             white-space: nowrap;
         }
 
-        .info-row .label {
-            color: var(--ios-gray);
-            font-size: 0.82rem;
+        a.info-link {
+            text-decoration: none;
+            color: inherit;
+            cursor: pointer;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        a.info-link:active {
+            background: rgba(0, 122, 255, 0.18);
+            border-color: rgba(0, 122, 255, 0.35);
+        }
+
+        .info-link .chevron {
             margin-left: auto;
-            font-weight: 400;
+            margin-right: 0;
+            width: auto;
+            color: var(--ios-gray);
+            font-size: 0.75rem;
         }
 
         .payment-carousel {
@@ -523,14 +536,16 @@
                     <i class="fas fa-map-marker-alt"></i>
                     <span>TP.HCM, Việt Nam</span>
                 </div>
-                <div class="info-row">
+                <a class="info-row info-link" href="tel:+84393302487" title="Gọi điện">
                     <i class="fas fa-phone"></i>
                     <span>039 330 2487</span>
-                </div>
-                <div class="info-row">
+                    <i class="fas fa-chevron-right chevron"></i>
+                </a>
+                <a class="info-row info-link" href="mailto:Profile.haminhkhiem@gmail.com" title="Gửi email">
                     <i class="fas fa-envelope"></i>
                     <span>Profile.haminhkhiem@gmail.com</span>
-                </div>
+                    <i class="fas fa-chevron-right chevron"></i>
+                </a>
             </div>
         </div>
 
