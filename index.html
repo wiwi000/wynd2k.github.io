@@ -21,6 +21,7 @@
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
         }
 
         body {
@@ -341,12 +342,6 @@
             text-decoration: none;
             color: inherit;
             cursor: pointer;
-            -webkit-tap-highlight-color: transparent;
-        }
-
-        a.info-link:active {
-            background: rgba(0, 122, 255, 0.18);
-            border-color: rgba(0, 122, 255, 0.35);
         }
 
         .info-link .chevron {
@@ -542,7 +537,6 @@
             cursor: pointer;
             overflow: hidden;
             transition: transform 0.45s cubic-bezier(0.23, 1, 0.32, 1), box-shadow 0.45s ease;
-            -webkit-tap-highlight-color: transparent;
         }
 
         .trophy-card:nth-child(1) { transform: rotate(-2.5deg); }
@@ -835,7 +829,6 @@
             justify-content: center;
             box-shadow: 0 8px 20px rgba(0, 122, 255, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.4);
             transition: transform 0.25s cubic-bezier(0.23, 1, 0.32, 1), box-shadow 0.25s ease;
-            -webkit-tap-highlight-color: transparent;
         }
 
         .music-btn:active { transform: scale(0.92); }
