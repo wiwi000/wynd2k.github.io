@@ -378,108 +378,174 @@
             font-size: 0.75rem;
         }
 
-        /* ==================== PAYMENT (boarding-pass ticket style) ==================== */
-        /* Outer layer keeps the drop shadow; the inner layer is masked, and a mask
-           would otherwise clip the shadow away */
-        .pay-ticket {
+        /* ==================== PAYMENT (neon scanner style) ==================== */
+        .pay-neon {
             position: relative;
-            width: 88%;
-            margin: 0 auto 18px;
-            border-radius: 24px;
-            color: #12141D;
-            box-shadow: 0 18px 50px rgba(0, 0, 0, 0.6);
+            border-radius: 26px;
+            margin-bottom: 18px;
+            padding: 22px 20px 18px;
+            background:
+                radial-gradient(130% 100% at 80% 0%, rgba(0, 199, 253, 0.12) 0%, transparent 55%),
+                radial-gradient(130% 100% at 10% 100%, rgba(122, 82, 255, 0.14) 0%, transparent 55%),
+                #0B0E17;
+            box-shadow: 0 16px 50px rgba(0, 0, 0, 0.65), 0 0 34px rgba(0, 199, 253, 0.12);
         }
 
-        /* Inner layer: background + real punched holes at the perforation line.
-           --hole-y is set from JS to the perforation's actual position.
-           Two non-overlapping half-width mask layers (one hole each) — needs no
-           mask-composite, which some mobile browsers implement incorrectly and
-           would leave the holes only partially transparent. */
-        .t-inner {
-            --hole-y: -60px;
-            border-radius: 24px;
-            padding-bottom: 14px;
-            background: linear-gradient(180deg, #FFFFFF 0%, #EFF2F7 100%);
-            overflow: hidden;
-            -webkit-mask:
-                radial-gradient(circle at 0 var(--hole-y), transparent 12px, #000 12.5px) left center / 51% 100% no-repeat,
-                radial-gradient(circle at 100% var(--hole-y), transparent 12px, #000 12.5px) right center / 51% 100% no-repeat;
-            mask:
-                radial-gradient(circle at 0 var(--hole-y), transparent 12px, #000 12.5px) left center / 51% 100% no-repeat,
-                radial-gradient(circle at 100% var(--hole-y), transparent 12px, #000 12.5px) right center / 51% 100% no-repeat;
+        /* Neon gradient ring (masked to a thin border, same proven technique
+           as the achievement card's gold ring) */
+        .pay-neon::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 26px;
+            padding: 1.5px;
+            background: linear-gradient(120deg, #00C7FD, #007AFF 40%, #7A52FF 80%, #00C7FD);
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            mask-composite: exclude;
+            pointer-events: none;
         }
 
-        .t-head {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 17px 19px 12px;
-        }
-
-        .t-title {
-            font-size: 0.92rem;
+        .n-title {
+            text-align: center;
+            font-size: 0.95rem;
             font-weight: 800;
-            letter-spacing: 1px;
-            color: #12141D;
+            letter-spacing: 2.5px;
+            background: linear-gradient(90deg, #00C7FD, #7AB8FF);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin-bottom: 14px;
         }
 
-        .t-sub {
-            font-size: 0.63rem;
-            color: #6B7280;
-            margin-top: 3px;
-        }
-
-        .t-chip {
-            font-size: 0.62rem;
-            font-weight: 700;
-            color: #0068D6;
-            background: rgba(0, 122, 255, 0.1);
-            border: 1px solid rgba(0, 122, 255, 0.25);
-            padding: 6px 12px;
+        .n-tabs {
+            display: flex;
+            gap: 6px;
+            background: rgba(255, 255, 255, 0.07);
+            border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: 999px;
-            white-space: nowrap;
+            padding: 4px;
+            margin-bottom: 16px;
         }
 
-        /* Perforated divider — the side holes are punched by the .t-inner mask */
-        .t-perfo {
+        .n-tab {
+            flex: 1;
+            border: none;
+            font: inherit;
+            text-align: center;
+            font-size: 0.72rem;
+            font-weight: 600;
+            padding: 8px 0;
+            border-radius: 999px;
+            color: #9AA3B5;
+            background: transparent;
+            cursor: pointer;
+            transition: color 0.25s ease, background 0.25s ease, box-shadow 0.25s ease;
+        }
+
+        .n-tab.on {
+            color: #fff;
+            background: linear-gradient(180deg, #2E9BFF, #0068D6);
+            box-shadow: 0 4px 14px rgba(0, 122, 255, 0.45);
+        }
+
+        .n-tab:focus-visible {
+            outline: 2px solid #00C7FD;
+            outline-offset: 2px;
+        }
+
+        .n-frame {
             position: relative;
-            height: 0;
-            border-top: 2px dashed #C9CFDA;
-            margin-top: 2px;
+            padding: 14px;
         }
 
-        .t-stub {
+        /* Viewfinder corner brackets */
+        .n-frame::before,
+        .n-frame::after,
+        .n-corner::before,
+        .n-corner::after {
+            content: '';
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            border: 3px solid #00C7FD;
+            filter: drop-shadow(0 0 6px rgba(0, 199, 253, 0.8));
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .n-frame::before { top: 0; left: 0; border-right: none; border-bottom: none; border-radius: 12px 0 0 0; }
+        .n-frame::after { top: 0; right: 0; border-left: none; border-bottom: none; border-radius: 0 12px 0 0; }
+        .n-corner::before { bottom: 0; left: 0; border-right: none; border-top: none; border-radius: 0 0 0 12px; }
+        .n-corner::after { bottom: 0; right: 0; border-left: none; border-top: none; border-radius: 0 0 12px 0; }
+
+        /* Scanning beam sweeping over the QR */
+        .n-scan {
+            position: absolute;
+            left: 16px;
+            right: 16px;
+            top: 46%;
+            height: 3px;
+            border-radius: 99px;
+            background: linear-gradient(90deg, transparent, #00C7FD 30%, #7AB8FF 50%, #00C7FD 70%, transparent);
+            box-shadow: 0 0 14px rgba(0, 199, 253, 0.9);
+            pointer-events: none;
+            z-index: 1;
+            animation: scan-sweep 2.8s ease-in-out infinite alternate;
+        }
+
+        @keyframes scan-sweep {
+            from { top: 7%; }
+            to { top: 90%; }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .n-scan { animation: none; }
+        }
+
+        .n-foot {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 13px 19px 3px;
+            margin-top: 14px;
+            padding: 0 4px;
         }
 
-        .t-bank span {
+        .n-bank span {
             display: block;
-            font-size: 0.8rem;
+            font-size: 0.78rem;
             font-weight: 700;
-            color: #12141D;
+            color: #EAF6FF;
         }
 
-        .t-bank small {
+        .n-bank small {
             display: block;
-            font-size: 0.6rem;
             font-weight: 500;
-            color: #6B7280;
+            font-size: 0.6rem;
+            color: #7E8AA0;
             margin-top: 2px;
-            letter-spacing: 0.5px;
+            letter-spacing: 0.3px;
         }
 
-        .t-barcode {
-            width: 80px;
-            height: 30px;
+        .n-live {
+            font-size: 0.6rem;
+            font-weight: 700;
+            color: #30D158;
+            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
             flex-shrink: 0;
-            background: repeating-linear-gradient(90deg,
-                #12141D 0 2px, transparent 2px 4px,
-                #12141D 4px 7px, transparent 7px 9px,
-                #12141D 9px 10px, transparent 10px 13px);
-            border-radius: 2px;
+        }
+
+        .n-live i {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: #30D158;
+            box-shadow: 0 0 8px #30D158;
+            animation: status-pulse 2s ease-in-out infinite;
         }
 
         .payment-carousel {
@@ -489,7 +555,6 @@
             scroll-snap-type: x mandatory;
             -webkit-overflow-scrolling: touch;
             border-radius: 14px;
-            margin: 2px 0 16px;
             scrollbar-width: none;
             cursor: grab;
         }
@@ -512,13 +577,12 @@
             scroll-snap-align: center;
             scroll-snap-stop: always;
             text-align: center;
-            padding: 0 22px;
         }
 
         .qr-wrap {
             position: relative;
             width: 100%;
-            max-width: 280px;
+            max-width: 320px;
             margin: 0 auto;
             border-radius: 14px;
             cursor: pointer;
@@ -529,7 +593,6 @@
             /* Keep the width/height attributes as an aspect-ratio hint only */
             height: auto;
             border-radius: 14px;
-            border: 1px solid #E3E7EE;
             background: #fff;
             display: block;
             pointer-events: none;
@@ -541,6 +604,7 @@
         .qr-overlay {
             position: absolute;
             inset: 0;
+            z-index: 2;
             border-radius: 14px;
             background: rgba(10, 12, 18, 0.55);
             backdrop-filter: blur(3px);
@@ -585,42 +649,16 @@
             outline-offset: 3px;
         }
 
-        .payment-dots {
-            display: flex;
-            justify-content: center;
-            gap: 8px;
-            margin-top: 14px;
-        }
-
-        .pay-dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: #C9CFDA;
-            transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
-            border: none;
-            padding: 0;
-            cursor: pointer;
-        }
-
-        .pay-dot:focus-visible,
         .payment-carousel:focus-visible {
             outline: 2px solid #007AFF;
             outline-offset: 3px;
-        }
-
-        .pay-dot.active {
-            background: #007AFF;
-            width: 22px;
-            border-radius: 999px;
-            box-shadow: 0 0 10px rgba(0, 122, 255, 0.35);
         }
 
         .payment-hint {
             text-align: center;
             margin-top: 12px;
             font-size: 0.72rem;
-            color: #8A94A6;
+            color: #7E8AA0;
         }
 
         .payment-hint i {
@@ -1207,54 +1245,49 @@
             </div>
         </section>
 
-        <!-- Payment Card (boarding-pass ticket style) -->
-        <section class="pay-ticket fade-in delay-3">
-            <div class="t-inner">
-            <div class="t-head">
-                <div>
-                    <div class="t-title">PAYMENT</div>
-                    <div class="t-sub">Quét mã để chuyển khoản</div>
-                </div>
-                <div class="t-chip">NAPAS 247</div>
+        <!-- Payment Card (neon scanner style) -->
+        <section class="pay-neon fade-in delay-3">
+            <div class="n-title">PAYMENT</div>
+
+            <div class="n-tabs" role="group" aria-label="Chọn kênh thanh toán">
+                <button type="button" class="n-tab on" aria-pressed="true">MB Bank</button>
+                <button type="button" class="n-tab" aria-pressed="false">MoMo</button>
             </div>
 
-            <div class="payment-carousel" id="payment-carousel" tabindex="0" aria-label="Mã QR thanh toán">
-                <div class="payment-track" id="payment-track">
-                    <div class="payment-slide" data-bank="MB Bank • VietQR">
-                        <div class="qr-wrap" data-file="MB-Bank-VietQR.jpg" role="button" tabindex="0" aria-label="Hiện nút lưu mã QR MB Bank">
-                            <img src="./assets/qr-mb.jpg?v=2" alt="VietQR - MB Bank" width="1080" height="1121" decoding="async" draggable="false">
-                            <div class="qr-overlay">
-                                <button type="button" class="qr-save-btn"><i class="fas fa-download"></i> Lưu ảnh QR</button>
+            <div class="n-frame">
+                <span class="n-corner" aria-hidden="true"></span>
+                <div class="payment-carousel" id="payment-carousel" tabindex="0" aria-label="Mã QR thanh toán">
+                    <div class="payment-track" id="payment-track">
+                        <div class="payment-slide" data-bank="MB Bank • VietQR" data-sub="NAPAS 247 • VietQR Global">
+                            <div class="qr-wrap" data-file="MB-Bank-VietQR.jpg" role="button" tabindex="0" aria-label="Hiện nút lưu mã QR MB Bank">
+                                <img src="./assets/qr-mb.jpg?v=2" alt="VietQR - MB Bank" width="1080" height="1121" decoding="async" draggable="false">
+                                <div class="qr-overlay">
+                                    <button type="button" class="qr-save-btn"><i class="fas fa-download"></i> Lưu ảnh QR</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="payment-slide" data-bank="MoMo • VietQR" data-sub="Ví điện tử MoMo • NAPAS 247">
+                            <div class="qr-wrap" data-file="MoMo-VietQR.jpg" role="button" tabindex="0" aria-label="Hiện nút lưu mã QR MoMo">
+                                <img src="./assets/qr-momo.jpg?v=2" alt="MoMo - VietQR" width="1080" height="1104" loading="lazy" decoding="async" draggable="false">
+                                <div class="qr-overlay">
+                                    <button type="button" class="qr-save-btn"><i class="fas fa-download"></i> Lưu ảnh QR</button>
+                                </div>
                             </div>
                         </div>
                     </div>
-                    <div class="payment-slide" data-bank="MoMo • VietQR">
-                        <div class="qr-wrap" data-file="MoMo-VietQR.jpg" role="button" tabindex="0" aria-label="Hiện nút lưu mã QR MoMo">
-                            <img src="./assets/qr-momo.jpg?v=2" alt="MoMo - VietQR" width="1080" height="1104" loading="lazy" decoding="async" draggable="false">
-                            <div class="qr-overlay">
-                                <button type="button" class="qr-save-btn"><i class="fas fa-download"></i> Lưu ảnh QR</button>
-                            </div>
-                        </div>
-                    </div>
                 </div>
+                <div class="n-scan" aria-hidden="true"></div>
             </div>
 
-            <div class="t-perfo" aria-hidden="true"></div>
-            <div class="t-stub">
-                <div class="t-bank">
+            <div class="n-foot">
+                <div class="n-bank">
                     <span id="pay-bank-name">MB Bank • VietQR</span>
-                    <small>HA MINH KHIEM</small>
+                    <small id="pay-bank-sub">NAPAS 247 • VietQR Global</small>
                 </div>
-                <div class="t-barcode" aria-hidden="true"></div>
-            </div>
-
-            <div class="payment-dots" id="payment-dots">
-                <button type="button" class="pay-dot active" aria-label="MB Bank VietQR" aria-current="true"></button>
-                <button type="button" class="pay-dot" aria-label="MoMo VietQR"></button>
+                <div class="n-live"><i></i>SẴN SÀNG</div>
             </div>
             <div class="payment-hint">
                 <i class="fas fa-hand-pointer"></i> Lướt để xem mã khác • Chạm vào mã để lưu ảnh
-            </div>
             </div>
         </section>
 
@@ -1444,22 +1477,22 @@
             const carousel = document.getElementById('payment-carousel');
             if (!carousel) return;
 
-            const dots = document.querySelectorAll('.pay-dot');
+            const tabs = document.querySelectorAll('.n-tab');
             const slides = document.querySelectorAll('.payment-slide');
             const bankName = document.getElementById('pay-bank-name');
+            const bankSub = document.getElementById('pay-bank-sub');
             const slideCount = slides.length;
 
-            // Update dot indicator while scrolling (touch swipe is native via scroll-snap)
+            // Sync tabs + footer bank info while scrolling (touch swipe is native via scroll-snap)
             function updateDots() {
                 const index = Math.round(carousel.scrollLeft / carousel.clientWidth);
-                dots.forEach((d, i) => {
-                    d.classList.toggle('active', i === index);
-                    if (i === index) d.setAttribute('aria-current', 'true');
-                    else d.removeAttribute('aria-current');
+                tabs.forEach((t, i) => {
+                    t.classList.toggle('on', i === index);
+                    t.setAttribute('aria-pressed', i === index ? 'true' : 'false');
                 });
-                // Ticket stub shows the bank of the QR in view
-                if (bankName && slides[index] && slides[index].dataset.bank) {
-                    bankName.textContent = slides[index].dataset.bank;
+                if (slides[index]) {
+                    if (bankName && slides[index].dataset.bank) bankName.textContent = slides[index].dataset.bank;
+                    if (bankSub && slides[index].dataset.sub) bankSub.textContent = slides[index].dataset.sub;
                 }
             }
             carousel.addEventListener('scroll', () => {
@@ -1500,31 +1533,12 @@
                 carousel.scrollTo({ left: index * carousel.clientWidth, behavior: 'smooth' });
             });
 
-            // Click on dots to jump
-            dots.forEach((dot, i) => {
-                dot.addEventListener('click', () => {
+            // Click on tabs to jump
+            tabs.forEach((tab, i) => {
+                tab.addEventListener('click', () => {
                     carousel.scrollTo({ left: i * carousel.clientWidth, behavior: 'smooth' });
                 });
             });
-        }
-
-        // ==================== TICKET PUNCHED HOLES ====================
-        // Positions the mask holes exactly on the perforation line, and keeps
-        // them there when the layout resizes
-        function initTicketHoles() {
-            const inner = document.querySelector('.t-inner');
-            const perfo = document.querySelector('.t-perfo');
-            if (!inner || !perfo) return;
-
-            function update() {
-                inner.style.setProperty('--hole-y', (perfo.offsetTop + 1) + 'px');
-            }
-
-            if ('ResizeObserver' in window) {
-                new ResizeObserver(update).observe(inner);
-            }
-            window.addEventListener('resize', update);
-            update();
         }
 
         // ==================== QR TAP-TO-SAVE ====================
@@ -1937,9 +1951,6 @@
 
             // QR tap-to-save overlay
             initQrSave();
-
-            // Punched holes on the payment ticket
-            initTicketHoles();
 
             // Achievement lightbox
             initAchievements();
