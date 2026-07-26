@@ -379,33 +379,51 @@
         }
 
         /* ==================== PAYMENT (boarding-pass ticket style) ==================== */
+        /* Outer layer keeps the drop shadow; the inner layer is masked, and a mask
+           would otherwise clip the shadow away */
         .pay-ticket {
             position: relative;
+            width: 88%;
+            margin: 0 auto 18px;
             border-radius: 24px;
-            margin-bottom: 18px;
-            padding-bottom: 16px;
-            background: linear-gradient(180deg, #FFFFFF 0%, #EFF2F7 100%);
             color: #12141D;
             box-shadow: 0 18px 50px rgba(0, 0, 0, 0.6);
+        }
+
+        /* Inner layer: background + real punched holes at the perforation line.
+           --hole-y is set from JS to the perforation's actual position. */
+        .t-inner {
+            --hole-y: -60px;
+            border-radius: 24px;
+            padding-bottom: 14px;
+            background: linear-gradient(180deg, #FFFFFF 0%, #EFF2F7 100%);
             overflow: hidden;
+            -webkit-mask:
+                radial-gradient(circle at 0 var(--hole-y), transparent 12px, #000 13px),
+                radial-gradient(circle at 100% var(--hole-y), transparent 12px, #000 13px);
+            -webkit-mask-composite: source-in;
+            mask:
+                radial-gradient(circle at 0 var(--hole-y), transparent 12px, #000 13px),
+                radial-gradient(circle at 100% var(--hole-y), transparent 12px, #000 13px);
+            mask-composite: intersect;
         }
 
         .t-head {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 20px 22px 14px;
+            padding: 17px 19px 12px;
         }
 
         .t-title {
-            font-size: 1rem;
+            font-size: 0.92rem;
             font-weight: 800;
             letter-spacing: 1px;
             color: #12141D;
         }
 
         .t-sub {
-            font-size: 0.66rem;
+            font-size: 0.63rem;
             color: #6B7280;
             margin-top: 3px;
         }
@@ -421,7 +439,7 @@
             white-space: nowrap;
         }
 
-        /* Perforated divider with punched side notches */
+        /* Perforated divider — the side holes are punched by the .t-inner mask */
         .t-perfo {
             position: relative;
             height: 0;
@@ -429,25 +447,11 @@
             margin-top: 2px;
         }
 
-        .t-perfo::before,
-        .t-perfo::after {
-            content: '';
-            position: absolute;
-            top: -14px;
-            width: 26px;
-            height: 26px;
-            border-radius: 50%;
-            background: #06070B;
-        }
-
-        .t-perfo::before { left: -14px; }
-        .t-perfo::after { right: -14px; }
-
         .t-stub {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 14px 22px 4px;
+            padding: 13px 19px 3px;
         }
 
         .t-bank span {
@@ -467,8 +471,8 @@
         }
 
         .t-barcode {
-            width: 92px;
-            height: 34px;
+            width: 80px;
+            height: 30px;
             flex-shrink: 0;
             background: repeating-linear-gradient(90deg,
                 #12141D 0 2px, transparent 2px 4px,
@@ -507,13 +511,13 @@
             scroll-snap-align: center;
             scroll-snap-stop: always;
             text-align: center;
-            padding: 0 26px;
+            padding: 0 22px;
         }
 
         .qr-wrap {
             position: relative;
             width: 100%;
-            max-width: 320px;
+            max-width: 280px;
             margin: 0 auto;
             border-radius: 14px;
             cursor: pointer;
@@ -1204,6 +1208,7 @@
 
         <!-- Payment Card (boarding-pass ticket style) -->
         <section class="pay-ticket fade-in delay-3">
+            <div class="t-inner">
             <div class="t-head">
                 <div>
                     <div class="t-title">PAYMENT</div>
@@ -1248,6 +1253,7 @@
             </div>
             <div class="payment-hint">
                 <i class="fas fa-hand-pointer"></i> Lướt để xem mã khác • Chạm vào mã để lưu ảnh
+            </div>
             </div>
         </section>
 
@@ -1499,6 +1505,25 @@
                     carousel.scrollTo({ left: i * carousel.clientWidth, behavior: 'smooth' });
                 });
             });
+        }
+
+        // ==================== TICKET PUNCHED HOLES ====================
+        // Positions the mask holes exactly on the perforation line, and keeps
+        // them there when the layout resizes
+        function initTicketHoles() {
+            const inner = document.querySelector('.t-inner');
+            const perfo = document.querySelector('.t-perfo');
+            if (!inner || !perfo) return;
+
+            function update() {
+                inner.style.setProperty('--hole-y', (perfo.offsetTop + 1) + 'px');
+            }
+
+            if ('ResizeObserver' in window) {
+                new ResizeObserver(update).observe(inner);
+            }
+            window.addEventListener('resize', update);
+            update();
         }
 
         // ==================== QR TAP-TO-SAVE ====================
@@ -1911,6 +1936,9 @@
 
             // QR tap-to-save overlay
             initQrSave();
+
+            // Punched holes on the payment ticket
+            initTicketHoles();
 
             // Achievement lightbox
             initAchievements();
